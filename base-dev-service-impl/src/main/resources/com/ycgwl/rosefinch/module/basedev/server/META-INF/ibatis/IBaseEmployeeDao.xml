@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseEmployeeDao">
+	<!-- 判断员工是不是唯一 -->
+	<select id="uniqueCheckByEployeeCode" parameterType="java.lang.String"
+		resultType="int">
+		select count(1) from T_BASE_EMPLOYEE t where
+		t.employee_code=#{employeeCode}
+		and t.del_flag=0
+	</select>
+	<!-- 删除单个 -->
+	<delete id="deleteEmployeeById" parameterType="java.lang.Long">
+		<!-- 1 ：禁用 -->
+		UPDATE T_BASE_EMPLOYEE t SET t.DEL_FLAG = 1,t.modify_time=sysdate
+		WHERE t.id= #{id}
+	</delete>
+
+	<!-- 是否停用0表示停用 -->
+	<update id="stopOneEmployee" parameterType="hashmap">
+		update
+		T_BASE_EMPLOYEE t set t.bl_flag=0,t.modify_time=sysdate,t.modify_user_code=#{currentUserCode} where t.ID = #{id}
+	</update>
+
+	<!-- 是否停用1表示启用 -->
+	<update id="startOneEmployee" parameterType="hashmap">
+		update
+		T_BASE_EMPLOYEE t set t.bl_flag=1,t.modify_time=sysdate,t.modify_user_code=#{currentUserCode} where t.ID = #{id}
+	</update>
+
+	<!-- 批量删除数据，假删除 -->
+	<delete id="deleteSomeEmployee" parameterType="java.lang.Long">
+		UPDATE T_BASE_EMPLOYEE t SET t.DEL_FLAG = 1,t.modify_time=sysdate
+		WHERE
+		<if test="ids != null and ids > 0 ">
+			t.ID IN
+			<foreach collection="ids" item="idsItem" open="(" separator=","
+				close=")">
+				#{idsItem}
+			</foreach>
+		</if>
+	</delete>
+
+	<!-- 判断员工的名字是不是唯一 -->
+	<select id="uniqueCheckByEmployeeName" parameterType="hashmap"
+		resultType="int">
+		select count(1) from T_BASE_EMPLOYEE t where
+		t.employee_name=#{employeeName}
+		and t.del_flag=0
+		<if test="state == 'update'">
+			and t.employee_code != #{employeeCode}
+		</if>
+	</select>
+	
+	
+	<!-- 条件查找 -->
+	<select id="queryEmployeeBySomeIf" parameterType="java.util.Map"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseEmployeeVo">
+	 SELECT a.id            id,
+       a.employee_code employeecode,
+       a.owner_site    ownersite,
+       a.employee_name employeename,
+       a.org_code      orgcode,
+       --s.site_name        sitename,
+       (SELECT s.site_name_short
+          FROM t_base_site s
+         WHERE s.site_code = a.owner_site) sitename,
+       a.phone phone,
+       a.address address,
+       a.create_user_code createusercode,
+       a.create_time createtime,
+       a.modify_user_code modifyusercode,
+       a.modify_time modifytime,
+       (SELECT o.org_name FROM t_base_org o WHERE o.org_code = a.org_code) orgname,
+       --t2.org_name        orgname,
+       a.bl_flag blflag,
+       a.title title
+		  FROM (SELECT * FROM t_base_employee t WHERE t.del_flag = 0
+		        <if test="employeeCode !=null and employeeCode !=''">
+						AND t.employee_code like '%' ||
+						#{employeeCode,jdbcType=VARCHAR} || '%'
+					</if>
+					<if test="employeeName !=null and employeeName != ''">
+						AND t.employee_name like '%' ||
+						#{employeeName,jdbcType=VARCHAR} || '%'
+					</if>
+					<if test="ownerSite !=null and ownerSite != ''">
+						AND t.owner_site = #{ownerSite,jdbcType=VARCHAR}
+					</if>
+					<if test="orgCode !=null and orgCode != ''">
+						AND t.org_code = #{orgCode,jdbcType=VARCHAR}
+					</if>
+		        ) a,
+		       (SELECT *
+		          FROM t_base_org o
+		         START WITH o.org_code = #{ownerOrg}
+		        CONNECT BY PRIOR o.org_code = o.up_org_code) b
+		 WHERE a.org_code = b.org_code
+		 ORDER BY a.modify_time DESC
+	</select>
+	
+	
+	<!-- added by guoh.mao -->
+	<!-- 查询员工（员工选择器使用） -->
+	<select id="queryEmployeeByNameOrCode" parameterType="java.util.Map"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseEmployeeVo">
+	 SELECT a.id            id,
+       a.employee_code employeecode,
+       a.owner_site    ownersite,
+       a.employee_name employeename,
+       a.org_code      orgcode,
+       --s.site_name        sitename,
+       (SELECT s.site_name_short
+          FROM t_base_site s
+         WHERE s.site_code = a.owner_site) sitename,
+       a.phone phone,
+       a.address address,
+       a.create_user_code createusercode,
+       a.create_time createtime,
+       a.modify_user_code modifyusercode,
+       a.modify_time modifytime,
+       (SELECT o.org_name FROM t_base_org o WHERE o.org_code = a.org_code) orgname,
+       --t2.org_name        orgname,
+       a.bl_flag blflag,
+       a.title title
+		  FROM (SELECT * FROM t_base_employee t WHERE t.del_flag = 0 and t.bl_flag=#{blFlag}
+					<if test="employeeName !=null and employeeName != ''">
+						AND (t.employee_name like '%' || #{employeeName,jdbcType=VARCHAR} || '%'
+						OR
+						t.employee_code like '%' || #{employeeName,jdbcType=VARCHAR} || '%'
+						)
+					</if>
+		        ) a,
+		       (SELECT *
+		          FROM t_base_org o
+		         START WITH o.org_code = #{ownerOrg}
+		        CONNECT BY PRIOR o.org_code = o.up_org_code) b
+		 WHERE a.org_code = b.org_code
+		 ORDER BY a.modify_time DESC
+	</select>
+	
+	
+	<!-- 批量插入员工 -->	
+	<insert id="batchInsertEmployee" parameterType="java.util.List">
+		INSERT INTO t_base_employee
+		   (ID,
+			EMPLOYEE_CODE,
+			EMPLOYEE_NAME,
+			OWNER_SITE,
+			PHONE,
+			ADDRESS,
+			BL_SEND_GAIN,
+			BL_DISPATCH_GAIN,
+			OWNER_RANGE,
+			BL_FLAG,
+			CREATE_USER_CODE,
+			CREATE_TIME,
+			MODIFY_USER_CODE,
+			MODIFY_TIME,
+			ORG_CODE,
+			DEL_FLAG,
+			EMPLOYEE_TYPE
+			)
+		<foreach collection="list" item="main" index="index" separator="UNION ALL">
+			SELECT #{main.id,jdbcType=BIGINT},
+			#{main.employeeCode,jdbcType=VARCHAR},
+			#{main.employeeName,jdbcType=VARCHAR},
+			#{main.ownerSite,jdbcType=VARCHAR},
+			#{main.phone,jdbcType=INTEGER},
+			#{main.address,jdbcType=VARCHAR},
+			#{main.blSendGain,jdbcType=VARCHAR},
+			#{main.blDispatchGain,jdbcType=VARCHAR},
+			#{main.ownerRange,jdbcType=VARCHAR},
+			#{main.blFlag,jdbcType=VARCHAR},
+			#{main.createUserCode,jdbcType=VARCHAR},
+			#{main.createTime,jdbcType=TIMESTAMP},
+			#{main.modifyUserCode,jdbcType=VARCHAR},
+			#{main.modifyTime,jdbcType=TIMESTAMP},
+			#{main.orgCode,jdbcType=VARCHAR},
+			#{main.delFlag,jdbcType=INTEGER},
+			#{main.employeeType,jdbcType=VARCHAR}
+			FROM DUAL
+		</foreach>
+	</insert>
+	
+	
+	<!-- 判断员工是否存在 -->
+  <select id="isExist" parameterType="string" resultType="boolean">
+  	SELECT CASE
+	         WHEN COUNT(1) >= 1 THEN
+	          1
+	         ELSE
+	          0
+	       END
+	  FROM t_base_employee emp
+	 WHERE emp.DEL_FLAG=0 AND emp.EMPLOYEE_CODE = #{employeeCode}
+  </select>
+  
+  <!-- 通过编码更新 -->
+  <update id="updateByCode" parameterType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseEmployeeEntity" >
+  	UPDATE t_base_employee emp
+	   SET emp.EMPLOYEE_NAME    = #{employeeName,jdbcType=VARCHAR},
+	       emp.OWNER_SITE       = #{ownerSite,jdbcType=VARCHAR},
+	       emp.PHONE            = #{phone,jdbcType=VARCHAR},
+	       emp.ADDRESS          = #{address,jdbcType=VARCHAR},
+	       emp.BL_SEND_GAIN     = #{blSendGain,jdbcType=DOUBLE},
+	       emp.BL_DISPATCH_GAIN = #{blDispatchGain,jdbcType=DOUBLE},
+	       emp.OWNER_RANGE      = #{ownerRange,jdbcType=VARCHAR},
+	       emp.BL_FLAG          = #{blFlag,jdbcType=INTEGER},
+	       emp.MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+	       emp.MODIFY_TIME      = #{modifyTime,jdbcType=TIMESTAMP},
+	       emp.ORG_CODE         = #{orgCode,jdbcType=VARCHAR},
+	       emp.EMPLOYEE_TYPE    = #{employeeType,jdbcType=INTEGER},
+	       emp.TITLE    		= #{title,jdbcType=VARCHAR}
+	 WHERE emp.del_flag = 0
+	   AND emp.employee_code = #{employeeCode,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <!-- 清空所属门店 -->
+  <update id="clearOwnerSite" parameterType="string">
+  	update t_base_employee e set e.owner_site=null where e.owner_site=#{siteCode}
+  </update>
+  
+  <!-- 设置员工的所属门店 -->
+  <update id="setOwnerSite" parameterType="map">
+		update t_base_employee e set e.owner_site=#{siteCode} where
+		e.employee_code in
+		<if test="empCodeList !=null">
+			<foreach collection="empCodeList" item="empCode" index="index"
+				separator="," open="(" close=")">
+				#{empCode,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+	</update>
+	
+	<select id="getByCode" parameterType="java.lang.String"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseEmployeeEntity">
+        select a.id            id,
+           a.employee_code employeecode,
+           a.owner_site    ownersite,
+           a.employee_name employeename,
+           a.org_code      orgcode from T_BASE_EMPLOYEE a where
+        a.employee_code=#{employeeCode}
+        and a.del_flag=0
+    </select>
+  
+</mapper>

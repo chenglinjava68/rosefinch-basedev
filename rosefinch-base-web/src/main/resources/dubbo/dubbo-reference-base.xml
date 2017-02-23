@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+        http://www.springframework.org/schema/beans/spring-beans.xsd  
+        http://code.alibabatech.com/schema/dubbo  
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 引用对外服务接口 -->
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseAppInfoService"
+        id="baseAppInfoService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseConfigService"
+        id="baseConfigService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseInterfaceService"
+        id="baseInterfaceService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseOrgService"
+        id="baseOrgService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseSiteService"
+        id="baseSiteService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseProductService"
+        id="baseProductService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseRegionService"
+        id="baseRegionService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseSiteFinLineService"
+        id="baseSiteFinLineService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseRedisCacheService"
+        id="baseRedisCacheService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseAreaService"
+        id="baseAreaService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseEmployeeService"
+        id="baseEmployeeService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseMaterialService"
+        id="baseMaterialService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IGetPackageTimeService"
+        id="getPackageTimeService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseUnloadTimeService"
+        id="baseUnloadTimeService" check="false" />
+        <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.ISignSiteTimeService"
+        id="signSiteTimeService" check="false" />
+        <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.ISignTrancenterTimeService"
+        id="signTrancenterTimeService" check="false" />
+        <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseVehicleService"
+        id="baseVehicleService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseClassesService"
+        id="baseClassesService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseRouteService"
+        id="baseRouteService" check="false" />
+    <dubbo:reference
+        interface="com.ycgwl.rosefinch.module.basedev.server.services.base.IBaseCarLineService"
+        id="baseCarLineService" check="false" />
+</beans>  

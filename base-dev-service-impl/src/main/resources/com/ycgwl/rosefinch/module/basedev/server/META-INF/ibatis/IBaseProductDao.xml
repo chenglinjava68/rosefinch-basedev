@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseProductDao">
+	<resultMap type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseProductEntity" id="BaseProductEntityResult">
+	</resultMap>
+	
+	<select id="uniqueCheckByProductCode" parameterType="string" resultType="int">
+		select count(1) from t_base_product t where t.product_code=#{productCode} and t.del_flag=0
+	</select>
+	<select id="uniqueCheckByProductName" parameterType="hashmap" resultType="int">
+		select count(1)
+		  from t_base_product t
+		 where t.product_name = #{productName}
+		   and t.del_flag=0
+		 <if test="state == 'update'">
+		   and t.product_code != #{productCode}
+		 </if>
+	</select>
+	
+	<update id="logicalDeleteById" parameterType="long">
+		update t_base_product t set t.del_flag=1 where id = #{id}
+	</update>
+	
+	<update id="updateProductBlFlagByMap" parameterType="hashmap">
+        update T_BASE_PRODUCT t set t.bl_flag=#{blFlag} ,t.modify_time=#{modifyTime} where ID in
+        <foreach collection="list" item = "id" open="(" separator="," close=")">#{id}</foreach>  
+    </update>
+	
+	<!-- 获取产品列表（产品公共选择器） -->
+	<select id="getPaginationBaseProductList"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseProductEntity" parameterType="hashmap">
+		SELECT p.ID id,p.product_code productCode,p.bl_flag blFlag,p.product_name productName,p.UP_PRODUCT_CODE upProductCode,p.REGION_MATCH_MODE regionMatchMode,p.STATUS status,p.PRODUCT_LEVEL productLevel,p.REMARK remark FROM t_base_product p
+		WHERE 1 = 1
+		<if test="pls != null">
+			AND p.PRODUCT_LEVEL IN
+			<foreach item="pl" collection="pls" open="(" separator=","
+				close=")">
+				#{pl}
+			</foreach>
+		</if>
+		<if test="productName != null and productName != ''">
+			AND (p.product_code LIKE '${productName}' OR p.product_name LIKE '${productName}')
+		</if>
+		
+		<if test="blFlag != null and blFlag != ''">
+			AND p.bl_flag = #{blFlag, jdbcType = INTEGER}
+		</if>
+		
+		<if test="status != null and status != ''">
+			AND p.status = #{status, jdbcType = INTEGER}
+		</if>
+		
+		AND p.del_flag = 0
+	</select>
+	
+</mapper>

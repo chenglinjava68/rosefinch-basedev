@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseUnloadTimeDao">
+    <select id="uniqueCheckByConfigCode" parameterType="string" resultType="int">
+        select count(1) from T_UNLOAD_TIME t where t.config_code=#{configCode} and t.del_flag=0
+    </select>
+     <select id="uniqueCheckByConfigName" parameterType="hashmap" resultType="int">
+        select count(1)
+          from T_UNLOAD_TIME t
+         where t.config_name = #{configName}
+         and t.del_flag=0
+         <if test="state == 'update'">
+           and t.config_code != #{configCode}
+         </if>
+    </select>
+    <update id="logicalDeleteById" parameterType="long">
+        update T_UNLOAD_TIME t set t.del_flag=1 where ID = #{id}
+    </update>
+     <update id="batchlogicalDeleteById" parameterType="java.util.List">
+        update T_UNLOAD_TIME t set t.del_flag=1 where ID in
+        <foreach collection="list" item = "id" open="(" separator="," close=")">#{id}</foreach>  
+    </update>
+    <update id="batchUpdateBlFlagById" parameterType="hashmap">
+        update T_UNLOAD_TIME t set t.bl_flag=#{blFlag},t.modify_time=sysdate, t.modify_user_code=#{modifyUserCode} where ID in
+        <foreach collection="list" item = "id" open="(" separator="," close=")">#{id}</foreach>  
+    </update>
+</mapper>

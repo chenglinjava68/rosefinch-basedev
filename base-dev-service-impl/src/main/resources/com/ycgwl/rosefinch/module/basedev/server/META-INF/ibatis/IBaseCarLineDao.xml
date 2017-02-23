@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseCarLineDao">
+
+
+    <select id="uniqueCheckByLineCode" parameterType="hashmap" resultType="int">
+        select count(1) from T_BASE_CARLINE t where t.LINE_NAME=#{lineName} and t.del_flag=0
+        <if test="id != null">
+           and t.id != #{id}
+         </if>
+    </select>
+    <select id="uniqueCheckBylineCode" parameterType="string" resultType="int">
+        select count(1) from T_BASE_CARLINE t where t.line_code=#{lineCode} and t.del_flag=0
+    </select>
+    <update id="removeBaseCarLine" parameterType="long">
+        update T_BASE_CARLINE t set t.del_flag=1 where ID = #{lineCode}
+    </update>
+    
+    <update id="removeBaseCarLineByIdList" parameterType="java.util.List">
+        update T_BASE_CARLINE t set t.del_flag=1 where ID in
+        <foreach collection="list" item = "id" open="(" separator="," close=")">#{id}</foreach>  
+    </update>
+    <update id="updateBlFlagByMap" parameterType="hashmap">
+        update T_BASE_CARLINE t set t.bl_flag=#{blFlag},t.modify_time=sysdate, t.modify_user_code=#{modifyUserCode} where ID in
+        <foreach collection="list" item = "id" open="(" separator="," close=")">#{id}</foreach>  
+    </update>
+
+
+</mapper>

@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseSiteDao">
+	
+	<resultMap id="retMap" type="java.util.HashMap">  
+	   <result property="site_code" column="site_code" javaType="java.lang.String" />  
+	</resultMap> 
+	<select id="fuzzyQueryBySiteName" parameterType="string"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+		select site_id siteId,site_code siteCode,site_name siteName
+		from t_base_site where site_name like #{siteName}
+	</select>
+
+	<!-- <delete id="deleteBySiteCode" parameterType="string"> delete from t_base_site 
+		t where t.site_code=#{siteCode} </delete> -->
+
+	<update id="deleteBySiteCode" parameterType="string">
+		update t_base_site t
+		set t.del_flag=1 where t.site_code=#{siteCode}
+	</update>
+	
+	
+	<!-- 所属财务中心 -->
+	<select id="getUpFinanceCenterList" parameterType="hashmap" resultMap="baseSiteEntityResultMap">
+		select
+		<include refid="columns_of_t_base_site"></include>
+		from t_base_site SI
+		<where>
+			SI.SITE_TYPE=#{siteType}
+			<if test="siteNameShort!= null and siteNameShort !=''">
+				AND (SI.site_code LIKE '%'||#{siteNameShort}||'%' OR SI.SITE_NAME_SHORT LIKE '%'||#{siteNameShort}||'%')
+			</if>
+			AND SI.DEL_FLAG=0
+		</where>
+	</select>
+	
+	<!-- 账单财务中心 -->
+	<select id="getUpSettleCenterList"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity"
+		parameterType="hashmap">
+		<![CDATA[
+			select site.SITE_CODE siteCode, site.SITE_NAME siteName, site.site_name_short siteNameShort
+		  from T_BASE_SITE site
+		]]>
+		
+		<where>
+			<if test="siteType==5 or siteType==6 or siteType==7">
+				(site.SITE_TYPE=1 or site.SITE_TYPE=2)
+			</if>
+			
+			<if test="siteType==4 or siteType==8">
+				site.SITE_TYPE=2
+			</if>
+			
+			<if test="siteType==3">
+				site.SITE_TYPE=2
+			</if>
+			
+			<if test="siteType==2">
+				site.SITE_TYPE=1
+			</if>
+			
+			<if test="siteNameShort!= null and siteNameShort !=''">
+				AND (site.site_code LIKE '%'||#{siteNameShort}||'%' OR site.SITE_NAME_SHORT LIKE '%'||#{siteNameShort}||'%')
+			</if>
+			AND site.DEL_FLAG=0
+		</where>
+	</select>
+
+
+	<!-- 查询当前登录用户所属网点及所有下级网点 -->
+	<select id="queryOwnerSiteCascade"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity"
+		parameterType="hashmap">
+		select s.site_code siteCode, s.site_name siteName,s.site_name_short siteNameShort,s.site_type siteType,s.site_kind siteKind,
+        s.up_finance_center upFinanceCenter ,s.up_settle_center upSettleCenter
+		from
+		(select * from t_base_site a start with a.site_code=#{ownerSite,jdbcType=VARCHAR} connect by prior a.site_code=a.up_site) s
+		where 1=1
+		<if test="siteNameShort!=null and siteNameShort!=''">
+			AND (s.site_code LIKE '%'||#{siteNameShort,jdbcType=VARCHAR}||'%' OR s.site_name_short LIKE '%'||#{siteNameShort}||'%')
+		</if>
+		<if test="siteKind != null">
+			AND s.site_kind=#{siteKind, jdbcType = INTEGER}
+		</if>
+		<if test="blFlag != null">
+			AND s.bl_flag=#{blFlag, jdbcType = INTEGER}
+		</if>
+		<if test="delFlag != null">
+			AND s.del_flag=#{delFlag, jdbcType = INTEGER}
+		</if>
+	</select>
+	
+	
+    <!-- 查询当前登录用户所属网点及所有下级网点(需要的是list集合) -->
+	<select id="queryOwnerSiteCascade2"
+    resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity"
+    parameterType="hashmap">
+        select s.site_code siteCode,s.site_type siteType,s.site_kind siteKind
+        from
+		(select * from t_base_site a start with a.site_code=#{ownerSite,jdbcType=VARCHAR} connect by prior a.site_code=a.up_site) s
+		where 1=1
+		<if test="siteName != null and siteName != ''">
+			AND (s.site_code LIKE '%'||#{siteName,jdbcType=VARCHAR}||'%' OR s.site_name_short LIKE '%'||#{siteName}||'%')
+		</if>
+		<if test="siteKind != null">
+			AND s.site_kind=#{siteKind, jdbcType = INTEGER}
+		</if>
+		<if test="blFlag != null">
+			AND s.bl_flag=#{blFlag, jdbcType = INTEGER}
+		</if>
+		<if test="delFlag != null">
+			AND s.del_flag=#{delFlag, jdbcType = INTEGER}
+		</if>
+    </select>
+    
+    
+    <!-- 同时查询子网点 -->
+	<select id="getBaseSiteCodeList" parameterType="string" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">                
+           SELECT DISTINCT
+               SITE.SITE_CODE siteCode, SITE.SITE_TYPE siteType,SITE.SITE_KIND siteKind,SITE.UP_SITE upSite
+            FROM
+                (
+                    SELECT
+                      *
+                    FROM
+                        T_BASE_SITE  SI START WITH SI.SITE_CODE = #{SiteCode,jdbcType=VARCHAR}  CONNECT BY PRIOR SI.SITE_CODE = SI.UP_SITE
+                ) SITE
+            WHERE
+                SITE.SITE_TYPE IN (1, 2, 3, 4, 7, 8) 
+                AND SITE.DEL_FLAG = 0 AND SITE.BL_FLAG = 1
+    </select>
+    
+    
+    
+    
+    <select id="getCalculateTotalAmountBaseSite" parameterType="string"  resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+    SELECT SITE_CODE siteCode, SITE_TYPE siteType, SITE_KIND siteKind,UP_SITE upSite
+    FROM T_BASE_SITE
+    WHERE UP_SITE = #{siteCode , jdbcType=VARCHAR}
+     AND SITE_KIND = 2
+    </select>
+    
+    
+    
+    <select id="getBaseSiteByAreaCode" parameterType="hashmap" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+        SELECT AREA_CODE areaCode , SITE_ID siteId 
+        FROM T_BASE_SITE 
+        where area_code in 
+        <if test="areaCodeList !=null">
+          <foreach collection="areaCodeList" item="item" index="index"  separator="," open="(" close=")"> 
+                 #{item,jdbcType=VARCHAR}
+        </foreach>
+        </if>
+    </select>
+    
+    
+	<select id="getSitePageListByCondition"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity"
+		parameterType="hashmap">
+		select s.site_code siteCode, s.site_name siteName,s.site_name_short siteNameShort
+		from
+		(select * from t_base_site a start with a.site_code=#{ownerSite,jdbcType=VARCHAR} connect by prior a.site_code=a.up_site) s
+		where 
+		<if test="list!=null and list.size()>0">
+			and s.site_type in (
+			<foreach collection="list" item="item" index="index" separator=",">
+				#{item,jdbcType=DECIMAL}
+			</foreach>
+			)
+		</if>
+		<if test="siteName !=null and siteName != ''">
+			and 
+			s.site_name like '%'||'${siteName}'||'%'		
+		</if>
+		<if test="siteShortName !=null and siteShortName != ''">
+			and 
+			s.site_name_short like '%'||'${siteShortName}'||'%'		
+		</if>
+		<if test="city !=null and city != '' ">
+			and 
+			s.city like '%'||'${city}'||'%'			
+		</if>
+		<if test="upFinanceCenter !=null and upFinanceCenter != '' ">
+			and 
+			s.UP_FINANCE_CENTER=#{upFinanceCenter,jdbcType=VARCHAR}
+		</if>
+		<if test="siteCode !=null and siteCode != '' ">
+			and 
+			s.site_Code like '%'||'${siteCode}'||'%'	
+		</if>
+	</select>
+	
+	
+	<!-- 下一站是网点并且是中心发网点-->
+	<select id="isFristWebsite" resultMap="retMap" parameterType="java.util.HashMap"  > 
+	  	SELECT t.site_code
+		  FROM t_Base_Site t
+		 WHERE t.site_code = #{operateSiteCode, jdbcType = VARCHAR}
+		   AND t.site_type = 3
+		   AND EXISTS (SELECT 1
+		          FROM t_Base_Site t
+		         WHERE t.site_code = #{siteCode, jdbcType = VARCHAR}
+		           AND t.site_type = 5)
+	</select>
+	
+	
+
+	<!-- 按网点编码、简称、网点全称、网点类型 查询网点 -->
+	<select id="getPaginationBaseSiteList"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity"
+		parameterType="hashmap">
+		SELECT s.site_code siteCode, s.site_name siteName,s.site_name_short
+		siteNameShort,s.UP_FINANCE_CENTER upFinanceCenter
+		FROM t_base_site s
+		WHERE 1 = 1
+		<if test="sts != null">
+			AND s.site_type IN
+			<foreach item="st" collection="sts" open="(" separator=","
+				close=")">
+				#{st}
+			</foreach>
+		</if>
+		<if test="siteName != null and siteName != ''">
+			AND (s.site_code LIKE '%'||#{siteName}||'%' OR s.site_name_short LIKE '%'||#{siteName}||'%')
+		</if>
+		
+		<if test="siteKind != null">
+			AND s.site_kind=#{siteKind, jdbcType = INTEGER}
+		</if>
+		
+		<if test="blFlag != null">
+			AND s.bl_flag=#{blFlag, jdbcType = INTEGER}
+		</if>
+		
+		AND s.del_flag = 0
+	</select>
+	
+	
+	<!-- =============唯一校验============ -->
+	<select id="uniqueCheckBySiteCode" parameterType="string" resultType="int">
+		select count(1) from t_base_site t where t.site_code=#{siteCode}
+	</select>
+	<select id="uniqueCheckBySiteName" parameterType="hashmap" resultType="int">
+		select count(1)
+		  from t_base_site t
+		 where t.site_name = #{siteName}
+		 <if test="state == 'update'">
+		   and t.site_code != #{siteCode}
+		 </if>
+	</select>
+	<select id="uniqueCheckBySiteNameShort" parameterType="hashmap" resultType="int">
+		select count(1)
+		  from t_base_site t
+		 where t.site_name_short = #{siteNameShort}
+		 <if test="state == 'update'">
+		   and t.site_code != #{siteCode}
+		 </if>
+	</select>
+	<select id="getBySiteNameShort" parameterType="string" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+        select t.site_id as siteId, t.site_code as siteCode, t.site_name as siteName, t.site_name_short as siteNameShort,
+        t.site_type as siteType,t.area_code as areaCode, t.UP_FINANCE_CENTER as upFinanceCenter ,t.UP_SETTLE_CENTER as upSettleCenter     
+        from t_base_site t
+        where 1=1        
+         and t.site_name_short = #{siteNameShort,jdbcType=VARCHAR}       
+         and rownum=1
+    </select>
+	
+	
+	
+	<!-- ======================== -->
+	<!-- 门店、门店附加信息一对一ResultMap -->
+	<resultMap type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity" id="baseSiteEntityResultMap">
+		<id property="siteId" column="SI_SITE_ID" />
+		<result property="siteCode" column="SI_SITE_CODE" />
+		<result property="siteName" column="SI_SITE_NAME" />
+		<result property="siteNameShort" column="SI_SITE_NAME_SHORT" />
+		<result property="orderBy" column="SI_ORDER_BY" />
+		<result property="upSite" column="SI_UP_SITE" />
+		<result property="upFinanceCenter" column="SI_UP_FINANCE_CENTER" />
+		<result property="upSettleCenter" column="SI_UP_SETTLE_CENTER" />
+		<result property="siteType" column="SI_SITE_TYPE" />
+		<result property="siteKind" column="SI_SITE_KIND" />
+		<result property="defaultCurrency" column="SI_DEFAULT_CURRENCY" />
+		<result property="country" column="SI_COUNTRY" />
+		<result property="province" column="SI_PROVINCE" />
+		<result property="city" column="SI_CITY" />
+		<result property="county" column="SI_COUNTY" />
+		<result property="bigArea" column="SI_BIG_AREA" />
+		<result property="areaCode" column="SI_AREA_CODE" />
+		<result property="siteAddress" column="SI_SITE_ADDRESS" />
+		<result property="blAllowTopayment" column="SI_BL_ALLOW_TOPAYMENT" />
+		<result property="siteServicesType" column="SI_SITE_SERVICES_TYPE" />
+		<result property="blAllowAgentMoney" column="SI_BL_ALLOW_AGENT_MONEY" />
+		<result property="blMaterial" column="SI_BL_MATERIAL" />
+		<result property="blPreLimit" column="SI_BL_PRE_LIMIT" />
+		<result property="blBigCustomer" column="SI_BL_BIG_CUSTOMER" />
+		<result property="goodsPaymentLimited" column="SI_GOODS_PAYMENT_LIMITED" />
+		<result property="blServicmode" column="SI_BL_SERVICMODE" />
+		<result property="blWeb" column="SI_BL_WEB" />
+		<result property="joinTime" column="SI_JOIN_TIME" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+		<result property="blAllowAgentSign" column="SI_BL_ALLOW_AGENT_SIGN" />
+		<result property="blAllPromise" column="SI_BL_ALL_PROMISE" />
+		<result property="sendpieceTrancenter" column="SI_SENDPIECE_TRANCENTER" />
+		<result property="arrivepieceTrancenter" column="SI_ARRIVEPIECE_TRANCENTER" />
+		<result property="createTime" column="SI_CREATE_TIME" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+		<result property="createUserCode" column="SI_CREATE_USER_CODE" />
+		<result property="modifyTime" column="SI_MODIFY_TIME" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+		<result property="modifyUserCode" column="SI_MODIFY_USER_CODE" />
+		<result property="delFlag" column="SI_DEL_FLAG" />
+		<result property="blArbitrationDepartment" column="SI_BL_ARBITRATION_DEPARTMENT" />
+		<result property="blMessage" column="SI_BL_MESSAGE" />
+		<result property="flag" column="SI_FLAG" />
+		<result property="blRec" column="SI_BL_REC" />
+		<result property="blSend" column="SI_BL_SEND" />
+		<result property="blCome" column="SI_BL_COME" />
+		<result property="canselfget" column="SI_CANSELFGET" />
+		<result property="blPdaTwo" column="SI_BL_PDA_TWO" />
+		<result property="blFlag" column="SI_BL_FLAG" />
+		<association property="baseSiteDetailEntity" resultMap="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseSiteDetailDao.baseSiteDetailResultMap"></association>
+	</resultMap>
+	
+	<!-- 门店表 -->
+	<sql id="columns_of_t_base_site">
+		SI.SITE_ID SI_SITE_ID,
+		SI.SITE_CODE SI_SITE_CODE,
+		SI.SITE_NAME SI_SITE_NAME,
+		SI.SITE_NAME_SHORT SI_SITE_NAME_SHORT,
+		SI.ORDER_BY SI_ORDER_BY,
+		SI.UP_SITE SI_UP_SITE,
+		SI.UP_FINANCE_CENTER SI_UP_FINANCE_CENTER,
+		SI.UP_SETTLE_CENTER SI_UP_SETTLE_CENTER,
+		SI.SITE_TYPE SI_SITE_TYPE,
+		SI.SITE_KIND SI_SITE_KIND,
+		SI.DEFAULT_CURRENCY SI_DEFAULT_CURRENCY,
+		SI.COUNTRY SI_COUNTRY,
+		SI.PROVINCE SI_PROVINCE,
+		SI.CITY SI_CITY,
+		SI.COUNTY SI_COUNTY,
+		SI.BIG_AREA SI_BIG_AREA,
+		SI.AREA_CODE SI_AREA_CODE,
+		SI.SITE_ADDRESS SI_SITE_ADDRESS,
+		SI.BL_ALLOW_TOPAYMENT SI_BL_ALLOW_TOPAYMENT,
+		SI.SITE_SERVICES_TYPE SI_SITE_SERVICES_TYPE,
+		SI.BL_ALLOW_AGENT_MONEY SI_BL_ALLOW_AGENT_MONEY,
+		SI.BL_MATERIAL SI_BL_MATERIAL,
+		SI.BL_PRE_LIMIT SI_BL_PRE_LIMIT,
+		SI.BL_BIG_CUSTOMER SI_BL_BIG_CUSTOMER,
+		SI.GOODS_PAYMENT_LIMITED SI_GOODS_PAYMENT_LIMITED,
+		SI.BL_SERVICMODE SI_BL_SERVICMODE,
+		SI.BL_WEB SI_BL_WEB,
+		SI.JOIN_TIME SI_JOIN_TIME,
+		SI.BL_ALLOW_AGENT_SIGN SI_BL_ALLOW_AGENT_SIGN,
+		SI.BL_ALL_PROMISE SI_BL_ALL_PROMISE,
+		SI.SENDPIECE_TRANCENTER SI_SENDPIECE_TRANCENTER,
+		SI.ARRIVEPIECE_TRANCENTER SI_ARRIVEPIECE_TRANCENTER,
+		SI.CREATE_TIME SI_CREATE_TIME,
+		SI.CREATE_USER_CODE SI_CREATE_USER_CODE,
+		SI.MODIFY_TIME SI_MODIFY_TIME,
+		SI.MODIFY_USER_CODE SI_MODIFY_USER_CODE,
+		SI.DEL_FLAG SI_DEL_FLAG,
+		SI.BL_ARBITRATION_DEPARTMENT SI_BL_ARBITRATION_DEPARTMENT,
+		SI.BL_MESSAGE SI_BL_MESSAGE,
+		SI.FLAG SI_FLAG,
+		SI.BL_REC SI_BL_REC,
+		SI.BL_SEND SI_BL_SEND,
+		SI.BL_COME SI_BL_COME,
+		SI.CANSELFGET SI_CANSELFGET,
+		SI.BL_PDA_TWO SI_BL_PDA_TWO,
+		SI.BL_FLAG SI_BL_FLAG
+	</sql>
+	
+	<!-- 门店、门店附加信息一对一查询WHERE SQL -->
+	<sql id="query_t_base_site_where_sql">
+		SI.DEL_FLAG=0
+		<if test="siteCode != null and siteCode !=''">
+			AND SI.SITE_CODE like '%'||#{siteCode}||'%'
+		</if>
+		<if test="siteNameShort != null and siteNameShort !=''">
+			AND SI.SITE_NAME_SHORT like '%'||#{siteNameShort}||'%'
+		</if>
+		<if test="sendpieceTrancenter != null and sendpieceTrancenter !=''">
+			AND SI.SENDPIECE_TRANCENTER = #{sendpieceTrancenter}
+		</if>
+		<if test="arrivepieceTrancenter != null and arrivepieceTrancenter !=''">
+			AND SI.ARRIVEPIECE_TRANCENTER = #{arrivepieceTrancenter}
+		</if>
+		<if test="siteKind != null and siteKind !=''">
+			AND SI.SITE_KIND = #{siteKind}
+		</if>
+	</sql>
+	
+	<!-- 门店、门店附加信息一对一查询 -->
+	<select id="queryBaseSite" parameterType="hashmap" resultMap="baseSiteEntityResultMap">
+		select
+		<include refid="columns_of_t_base_site"></include>
+		<![CDATA[
+		,
+		]]>
+		<include refid="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseSiteDetailDao.columns_of_t_base_site_detail"></include>
+		from t_base_site SI,t_base_site_detail DETAIL
+		<where>
+			<include refid="query_t_base_site_where_sql"></include>
+			AND SI.SITE_CODE = DETAIL.SITE_CODE(+)
+		</where>
+		start with SI.site_code=#{ownerSite} connect by prior SI.site_code=SI.up_site
+		ORDER BY SI.MODIFY_TIME DESC
+	</select>
+	
+	<!-- 乐观锁 -->
+	<update id="optimisticLock" parameterType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+		UPDATE t_base_site si
+		   SET si.modify_time = SYSDATE
+		 WHERE si.site_id = #{siteId}
+		   AND si.modify_time = #{modifyTime, jdbcType = TIMESTAMP}
+	</update>
+	
+	<!-- 批量修改启用状态 -->
+	<update id="batchUpdateBlFlag" parameterType="hashmap">
+		UPDATE t_base_site si SET si.bl_flag = #{blFlag},si.MODIFY_USER_CODE = #{currentUserCode},si.modify_time=sysdate
+		WHERE si.del_flag=0 and (1=2
+		<if test="codeList != null">
+			or si.site_code in 
+			<foreach item = "code" collection = "codeList" open = "(" separator = "," close = ")" >
+				#{code}
+			</foreach>
+		</if>
+		)
+	</update>
+	<!-- ======================== -->
+	
+	
+	<!-- 获取门店所属分公司 -->
+	<select id="getAffiliatedCompany"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity"
+		parameterType="string">
+		SELECT s.site_code         siteCode,
+		       s.site_name         siteName,
+		       s.site_name_short   siteNameShort,
+		       s.site_type         siteType,
+		       s.site_kind         siteKind,
+		       s.up_finance_center upFinanceCenter,
+		       s.up_settle_center  upSettleCenter
+		  FROM 
+		  (select * from t_base_site a start with a.site_code=#{siteCode,jdbcType=VARCHAR} connect by a.site_code=prior a.up_site) s
+		 WHERE s.site_type=2
+	</select>
+	
+	<select id="queryBySiteNameOrCode" parameterType="hashmap" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+        select t.up_site upSite,t.site_code siteCode from t_base_site t 
+        where  
+         <if test="siteName!=null and siteName != ''">
+           t.site_name_short like #{siteName} 
+         </if>
+          or
+          <if test="siteCode!=null and siteCode != ''">
+           t.site_code = #{siteCode}
+         </if>
+    </select>
+    
+    <select
+        id="queryChildSitesBySiteCode"
+        parameterType="string"
+        resultType="string">
+        SELECT T.UP_SITE
+          FROM T_BASE_SITE T
+         INNER JOIN (SELECT SITE_CODE
+                       FROM T_BASE_SITE
+                      WHERE BL_FLAG = 1
+                        AND UP_SITE = #{siteCode}) P
+            ON T.UP_SITE = P.SITE_CODE
+         GROUP BY UP_SITE
+    </select>
+	
+</mapper>
+
+

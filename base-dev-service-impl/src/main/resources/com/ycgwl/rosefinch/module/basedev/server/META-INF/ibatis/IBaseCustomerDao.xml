@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseCustomerDao">
+	<delete id="delteAllBaseCustomer">
+    delete from T_BASE_CUSTOMER
+    </delete>
+    <!-- 批量插入(作废) -->
+    <insert id="batchInsertCustomer" parameterType="java.util.List">
+        INSERT INTO T_BASE_CUSTOMER
+        (CUSTOMER_ID, CUSTOMER_CODE, CUSTOMER_NAME, CUSTOMER_FULL_NAME, CUSTOMER_BALANCE_MODE, CUSTOMER_LINKMAN,
+        CUSTOMER_PHONE, CUSTOMER_FAX, CUSTOMER_ADDRESS, CUS_SEND_ADDRESS, OWNER_SITE_CODE,CUSTOMER_REBATE,BALANCE_PASSWORD,
+        CUSTOMER_TYPE,OPERATION_EMPLOYEE,EMPLOYEE_CODE,POST_CODE,COUNTRY,PROVINCE,CITY,COUNTY,URL,EMAIL,BANK,ACCOUNT,HOLDER,
+        ID_CODE,BANK_ADDRESS,MARKET_MAN,CUSTOMER_SITE_TYPE,CUSTOMER_PHONE1,CUSTOMER_RANG,CUSTOMER_OWNER_TYPE,COMPANY_ADDRESS,
+        COMPANY_NAME,MEMBER_CHANNELS,VIP_MEMBER_ID,TOTA_COST,BL_OPEN,INDUSTRY_CLASS,INDUSTRY_DETAILS,BL_BAG_CUSTOMER,REBATE_NUMBER,
+        BL_REBATE_NUMBER,BL_MONEY_OPEN,CASH_CUSTOMER,REMARK,CREATE_TIME,MODIFY_TIME,CREATE_USER_CODE,MODIFY_USER_CODE,DEL_FLAG
+        )
+        <foreach collection="list" item="item" index="index"
+            separator="UNION ALL">
+            SELECT 
+            #{item.customerId,jdbcType=INTEGER},
+            #{item.customerCode,jdbcType=VARCHAR},
+            #{item.customerName,jdbcType=VARCHAR},
+            #{item.customerFullName,jdbcType=VARCHAR},
+            #{item.customerBalanceMode,jdbcType=INTEGER},
+            #{item.customerLinkman,jdbcType=VARCHAR},
+            #{item.customerPhone,jdbcType=VARCHAR},
+            #{item.customerFax,jdbcType=VARCHAR},
+            #{item.customerAddress,jdbcType=VARCHAR},
+            #{item.cusSendAddress,jdbcType=VARCHAR},
+            #{item.ownerSiteCode,jdbcType=VARCHAR},
+            #{item.customerRebate,jdbcType=DOUBLE},
+            #{item.balancePassword,jdbcType=VARCHAR},
+            #{item.customerType,jdbcType=INTEGER},
+            #{item.operationEmployee,jdbcType=VARCHAR},
+            #{item.employeeCode,jdbcType=VARCHAR},
+            #{item.postCode,jdbcType=VARCHAR},
+            #{item.country,jdbcType=VARCHAR},
+            #{item.province,jdbcType=VARCHAR},
+            #{item.city,jdbcType=VARCHAR},
+            #{item.county,jdbcType=VARCHAR},
+            #{item.url,jdbcType=VARCHAR},
+            #{item.email,jdbcType=VARCHAR},
+            #{item.bank,jdbcType=VARCHAR},
+            #{item.account,jdbcType=VARCHAR},
+            #{item.holder,jdbcType=VARCHAR},
+            #{item.idCode,jdbcType=VARCHAR},
+            #{item.bankAddress,jdbcType=VARCHAR},
+            #{item.marketMan,jdbcType=VARCHAR},
+            #{item.customerPhone1,jdbcType=VARCHAR},
+            #{item.customerRang,jdbcType=VARCHAR},
+            #{item.customerOwnerType,jdbcType=VARCHAR},
+            #{item.companyAddress,jdbcType=VARCHAR},
+            #{item.companyName,jdbcType=VARCHAR},
+            #{item.memberChannels,jdbcType=VARCHAR},
+            #{item.vipMemberId,jdbcType=VARCHAR},
+            #{item.totaCost,jdbcType=DECIMAL},
+            #{item.blOpen,jdbcType=INTEGER},
+            #{item.industryClass,jdbcType=VARCHAR},
+            #{item.industryDetails,jdbcType=VARCHAR},
+            #{item.blBagCustomer,jdbcType=VARCHAR},
+            #{item.industryDetails,jdbcType=VARCHAR},
+            #{item.blBagCustomer,jdbcType=INTEGER},
+            #{item.rebateNumber,jdbcType=INTEGER},
+            #{item.blMoneyOpen,jdbcType=INTEGER},
+            #{item.cashCustomer,jdbcType=INTEGER},
+            #{item.remark,jdbcType=VARCHAR},
+            #{item.createTime,jdbcType=DATE},
+            #{item.modifyTime,jdbcType=DATE},
+            #{item.createUserCode,jdbcType=VARCHAR},
+            #{item.modifyUserCode,jdbcType=VARCHAR},
+            #{item.delFlag,jdbcType=INTEGER}
+            FROM DUAL
+        </foreach>
+    </insert>
+</mapper>

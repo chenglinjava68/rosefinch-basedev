@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups xmlns="http://www.isdc.ro/wro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
+
+    <group name="baseOrg">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseOrgIndex.js</js>
+    </group>
+    <group name="baseProduct">
+    	<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseProductIndex.js</js>
+    </group>
+
+    <group name="baseInterface">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseInterfaceIndex.js
+        </js>
+    </group>
+
+    <group name="baseAppInfo">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseAppInfo.js
+        </js>
+    </group>
+    <group name="baseRegion">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseRegion.js
+        </js>
+    </group>
+    <!-- 配置管理 -->
+    <group name="baseConfig">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseConfig.js
+        </js>
+    </group>
+    <!--账户卡号登记 -->
+    <!-- <group name="baseAccountCard"> <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseAccountCard.js</js> 
+        </group> -->
+    <group name="baseArea">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseArea.js
+        </js>
+    </group>
+    <group name="baseEmployee">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js
+        </js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseEmployee.js
+        </js>
+    </group>
+    <!--揽件时效-->
+    <group name="getPackageTime">
+    	<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+    	<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseSitePanelSelect.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/getPackageTime.js</js>
+    </group>
+    <group name="getUnloadTime">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+    	<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseSitePanelSelect.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/getUnloadTime.js</js>
+    </group>
+    <group name="baseMaterial">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseMaterial.js</js>
+    </group>
+     <group name="refreshCache">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/refreshCache.js</js>
+    </group> 
+    <!-- 派件时效(门店) -->
+    <group name="storeSendTime">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseSitePanelSelect.js
+        </js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/storeSendTime.js
+        </js>
+    </group>
+    <!-- 派件时效(转运/分拨) -->
+      <group name="centreSendTime">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseSitePanelSelect.js
+        </js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/centreSendTime.js
+        </js>
+    </group>
+	
+	
+	<!-- 门店管理 -->
+	<group name="baseSite">
+		<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCustomVtype.js</js>
+		<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseAreaSelector.js</js>
+		<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+		<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseEmployeeSelector.js</js>
+		<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseSiteIndex.js</js>
+	</group>
+	
+	<!-- 车辆维护 -->
+    <group name="baseVehicle">
+    	<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseVehicleIndex.js</js>
+    </group>
+    <!--车线维护-->
+    <group name="baseCarLine">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/areaAddressCombox.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseCarLineIndex.js</js>
+    </group>
+	
+    <!-- 车次维护 -->
+     <group name="classes">
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/classes.js</js>
+    </group>
+    
+    <!-- 路由维护 -->
+    <group name="baseRoute">
+    	<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/basedevCommon.js</js>
+    	<js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/areaAddressCombox.js</js>
+        <js>classpath:com/ycgwl/rosefinch/module/basedev/server/META-INF/scripts/baseRouteIndex.js</js>
+    </group>
+</groups>
+

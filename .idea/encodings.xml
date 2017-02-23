@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base-dev" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base-dev-config" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base-dev-model" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base-dev-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base-dev-service-impl" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/rosefinch-base-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/rosefinch-baseTest-web" charset="UTF-8" />
+  </component>
+</project>

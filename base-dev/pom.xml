@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.ycgwl.base</groupId>
+		<artifactId>rosefinch-basedev</artifactId>
+		<version>1.1.1</version>
+	</parent>
+
+  <artifactId>base-dev</artifactId>
+  <packaging>jar</packaging>
+
+  <properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<rosefinch-version>0.0.1.FRAME</rosefinch-version>
+        <fo-version>0.0.1-FO</fo-version>
+        <price-version>0.0.1-PRICE</price-version>
+		<moduleContext>basedev</moduleContext>
+	</properties>
+	
+	
+	
+	<!-- deploy to nexus -->
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<url>http://172.16.254.191:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>http://172.16.254.191:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<dependencies>
+		<!-- inner jar begin -->
+		<dependency>
+			<groupId>com.ycgwl.base</groupId>
+			<artifactId>base-dev-service</artifactId>
+            <version>${project.parent.version}</version>
+		</dependency>
+		
+		<!-- 暂时注掉了 -->
+        <!-- <dependency>
+            <groupId>com.ycgwl.fo</groupId>
+            <artifactId>fo-dev-service</artifactId>
+            <version>${fo-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ycgwl.price</groupId>
+            <artifactId>price-dev-service</artifactId>
+           <version>${price-version}</version>
+        </dependency> -->
+        
+        
+		<!-- common -->
+		<dependency>
+			<groupId>com.ycgwl.rosefinch</groupId>
+			<artifactId>rosefinch-common-springmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ycgwl</groupId>
+			<artifactId>ycgwl-framework-data</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ycgwl.rosefinch</groupId>
+			<artifactId>rosefinch-common-login</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ycgwl.rosefinch</groupId>
+			<artifactId>rosefinch-common-message</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ycgwl.rosefinch</groupId>
+			<artifactId>rosefinch-common-dict</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ycgwl.rosefinch</groupId>
+			<artifactId>rosefinch-common-monitor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ycgwl.rosefinch</groupId>
+			<artifactId>rosefinch-common-authorization</artifactId>
+		</dependency>
+		<!-- inner jar end -->	
+		<!-- junit test begin -->
+		 <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-test</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>com.alibaba</groupId>
+		  <artifactId>druid</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>p6spy</groupId>
+		  <artifactId>p6spy</artifactId>
+		</dependency>
+		<!-- junit test end -->
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>ro.isdc.wro4j</groupId>
+				<artifactId>wro4j-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

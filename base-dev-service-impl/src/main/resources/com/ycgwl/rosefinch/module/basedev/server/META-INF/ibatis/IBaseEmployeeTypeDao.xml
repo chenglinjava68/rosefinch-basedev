@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+    namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseEmployeeTypeDao">
+    <!-- 根据EmployeeCode删除 -->
+    <delete id="deleteEmployeeTypeByEmployeeCode" parameterType="java.lang.String">
+      delete T_BASE_EMPLOYEE_TYPE t where t.employee_code=#{employeeCode}
+    </delete>
+    
+    <select id="getEmployeeTypeByEmployeeCode" parameterType="java.lang.String"  resultType="int">
+        select t.employee_type employeeType from T_BASE_EMPLOYEE_TYPE t where t.employee_code=#{employeeCode}
+    </select>
+</mapper>

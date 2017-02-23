@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseVehicleDao">
+	<select id="uniqueCheckByVehicleCode" parameterType="string" resultType="int">
+        select count(1) from T_BASE_VEHICLE t where t.VEHICEL_CODE=#{vehicelCode} and t.del_flag=0
+    </select>
+    
+    <select id="uniqueCheckByVehicelNo" parameterType="hashmap" resultType="int">
+        select count(1) from T_BASE_VEHICLE t where t.VEHICEL_NO=#{vehicelNo} and t.del_flag=0
+        <if test="id != null">
+           and t.id != #{id}
+         </if>
+    </select>
+    
+    <update id="logicalDeleteById" parameterType="long">
+        update T_BASE_VEHICLE t set t.del_flag=1 ,t.modify_time=sysdate where ID = #{id}
+    </update>
+    
+    <update id="batchlogicalDeleteById" parameterType="java.util.List">
+        update T_BASE_VEHICLE t set t.del_flag=1 ,t.modify_time=sysdate where ID in
+        <foreach collection="list" item = "id" open="(" separator="," close=")">#{id}</foreach>  
+    </update>
+    
+    <select id="queryVehicleRuns" parameterType="hashmap" resultType="java.util.HashMap">
+    	  select t.run_name as "runName", t.run_no as "runNo" from  T_BASE_VEHICLE_RUNS t where t.bl_flag = 1 and t.del_flag = 0
+    	  <if test="runName !=null and runName !=''">
+    	       and run_name like '%' || #{runName,jdbcType=VARCHAR} || '%'
+    	  </if>
+    </select>
+    
+    <select id="queryVehicleName" parameterType="string" resultType="string">
+        select t.run_name from T_BASE_VEHICLE_RUNS t where t.run_no=#{runNo} and rownum = 1
+    </select>
+    <update id="updateBlFlagByMap" parameterType="hashmap">
+        update T_BASE_VEHICLE t set t.bl_flag=#{blFlag},t.modify_time=sysdate, t.modify_user_code=#{modifyUserCode} where ID in
+        <foreach collection="list" item = "id" open="(" separator="," close=")">#{id}</foreach>  
+    </update>
+</mapper>

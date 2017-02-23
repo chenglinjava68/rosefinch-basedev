@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseSiteFinLineDao">
+	<delete id="deleteBySiteCode" parameterType="string">
+		delete from t_base_site_fin_line t where t.site_code=#{siteCode}
+	</delete>
+	<select id="searchCacheBaseSiteFinLine"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteFinLineEntity"
+		parameterType="java.util.Map">
+		select  ID as id,
+		SITE_CODE as siteCode,
+        SITE_SON as siteSon,
+		SITE_PARENT as siteParent,
+		LINE_TYPE as lineType,
+		PERIOD_BEGIN_TIME as periodBeginTime,
+		PERIOD_END_TIME as  periodEndTime,
+		DEL_FLAG as delFlag
+		from t_base_site_fin_line
+		where DEL_FLAG = 0 and sysdate>PERIOD_BEGIN_TIME and sysdate<![CDATA[<]]>PERIOD_END_TIME
+		<if test="siteCode !=null and siteCode !=''">
+			AND SITE_CODE = #{siteCode,jdbcType=VARCHAR}
+		</if>
+		<if test="lineType !=null">
+			AND LINE_TYPE = #{lineType,jdbcType=DECIMAL}
+		</if>
+	</select>
+</mapper>

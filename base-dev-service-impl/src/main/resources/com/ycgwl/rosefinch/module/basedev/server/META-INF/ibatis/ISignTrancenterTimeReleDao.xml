@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+    namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.ISignTrancenterTimeReleDao">
+    <delete id="deleteAllReles" parameterType="string">
+        DELETE FROM
+        T_SIGN_TRANCENTER_TIME_RELE
+        WHERE
+        CONFIG_CODE = #{configCode}
+    </delete>
+    <select id="findSignSiteTimeReleVoList" parameterType="java.lang.String"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.SignTrancenterTimeReleVo">
+        SELECT
+
+        R.CONFIG_CODE configCode,
+        R.SITE_CODE siteCode
+        FROM
+        T_SIGN_TRANCENTER_TIME_RELE R
+        WHERE
+        R.CONFIG_CODE = #{configCode}
+    </select>
+
+    <select id="getByConfigCodeAndSites" parameterType="hashmap"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity">
+        select t.site_id as orgId, p.orgCode AS orgCode ,p.orgName AS
+        orgName,p.orgNameShort AS orgNameShort ,p.orgType AS orgType
+        from
+        (select distinct g.site_code, g.config_code, 1 as site_id from
+        T_SIGN_TRANCENTER_TIME_RELE g where g.config_code=#{configCode})
+        t right join
+        (
+        <foreach collection="list" item="item" index="index"
+            separator="UNION ALL">
+            select
+            #{item.orgCode,jdbcType=VARCHAR} as orgCode,
+            #{item.orgName,jdbcType=VARCHAR} as orgName,
+            #{item.orgNameShort,jdbcType=VARCHAR} as orgNameShort,
+            #{item.orgType,jdbcType=VARCHAR} as orgType
+            from dual
+        </foreach>
+        )
+        p on t.SITE_CODE = p.orgCode
+    </select>
+
+    <select id="getOrgByConfigCode" parameterType="string"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity">
+        select o.org_code as orgCode, o.org_name as orgName
+        from T_SIGN_TRANCENTER_TIME_RELE t
+        inner join T_BASE_ORG o
+        on t.site_code = o.org_code
+        where t.config_code = #{configCode}
+    </select>
+
+</mapper>

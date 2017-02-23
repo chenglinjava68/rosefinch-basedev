@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.ycgwl.rosefinch:rosefinch-common-dict-service:0.0.1.FRAME">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ycgwl/rosefinch/rosefinch-common-dict-service/0.0.1.FRAME/rosefinch-common-dict-service-0.0.1.FRAME.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ycgwl/rosefinch/rosefinch-common-dict-service/0.0.1.FRAME/rosefinch-common-dict-service-0.0.1.FRAME-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ycgwl/rosefinch/rosefinch-common-dict-service/0.0.1.FRAME/rosefinch-common-dict-service-0.0.1.FRAME-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

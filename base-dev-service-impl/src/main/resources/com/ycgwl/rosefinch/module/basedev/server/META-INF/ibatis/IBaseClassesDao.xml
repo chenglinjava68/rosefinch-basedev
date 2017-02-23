@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseClassesDao">
+	
+	<select id="uniqueCheckByClassesCode" parameterType="java.lang.String"
+        resultType="int">
+       select count(1) from T_BASE_CLASSES t where
+        t.classes_code=#{classesCode}
+        and t.del_flag=0
+    </select>
+	<!--判断名字是不是唯一 -->
+	<select id="uniqueCheckByClassesName" parameterType="hashmap"
+		resultType="int">
+		select count(1) from T_BASE_CLASSES t where
+        t.classes_name=#{classesName}
+        and t.del_flag=0
+       <if test="state == 'update'">
+           and t.id != #{id}
+       </if>
+	</select>
+	<!-- 删除单个 -->
+	<delete id="deleteClassesById" parameterType="java.lang.Long" >
+		<!-- 1 ：禁用 -->
+		 UPDATE T_BASE_CLASSES t SET t.DEL_FLAG = 1,t.modify_time=sysdate
+         WHERE t.id= #{id}
+	</delete>
+
+	<!-- 是否停用0表示停用 -->
+	<update id="stopOneClasses" parameterType="hashmap" >
+		  update
+          T_BASE_CLASSES t set t.bl_flag=0,t.modify_time=sysdate,t.modify_user_code=#{currentUserCode} where t.ID = #{id}
+	</update>
+
+	<!-- 是否停用1表示启用 -->
+	<update id="startOneClasses" parameterType="hashmap" >
+		  update
+          T_BASE_CLASSES t set t.bl_flag=1,t.modify_time=sysdate,t.modify_user_code=#{currentUserCode} where t.ID = #{id}
+	</update>
+
+	<!-- 批量删除数据，假删除 -->
+	<delete id="deleteSomeClasses" parameterType="java.lang.Long" >
+		UPDATE T_BASE_CLASSES t SET t.DEL_FLAG = 1,t.modify_time=sysdate
+		WHERE
+		<if test="ids != null and ids > 0 ">
+			t.ID IN
+			<foreach collection="ids" item="idsItem" open="(" separator=","
+				close=")">
+				#{idsItem}
+			</foreach>
+		</if>
+	</delete>
+
+	<!-- 条件查找 -->
+	<select id="queryClassesBySomeIf" parameterType="java.util.Map"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseClassesVo">
+        		  select t.id               id,
+               t.line_code        lineCode,
+               t.bl_flag          blFlag,
+               t.create_user_code createUserCode,
+               t.create_time      createTime,
+               t.modify_user_code modifyUserCode,
+               t.modify_time      modifyTime,
+               t.remark           remark,
+               c.line_name        lineName,
+               t.classes_name     classesName,
+               t.vehicel_code     vehicelCode,
+               t.car_type         carType,
+               t.cycle            cycle,
+               t.departure_time   departureTime,
+               t.arrive_time      arriveTime,
+               v.vehicel_no       vehicelNo,
+               t.classes_code     classesCode
+          from T_BASE_CLASSES t
+          left join T_BASE_CARLINE c
+            on t.line_code = c.line_code
+          left join T_BASE_VEHICLE v
+            on t.vehicel_code = v.vehicel_code
+         where t.DEL_FLAG = 0
+		<if test="classesName !=null and classesName !=''">
+			AND t.classes_name like '%' ||
+			#{classesName,jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="vehicelCode !=null and vehicelCode != ''">
+			AND  t.vehicel_code = #{vehicelCode,jdbcType=VARCHAR}
+		</if>
+		order by t.modify_time desc
+	</select>
+	
+	<!-- 查询线路 -->
+	 <select id="queryCarLine" parameterType="java.util.Map" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseClassesVo">
+          select t.line_name lineName, t.line_code lineCode from  T_BASE_CARLINE t where t.del_flag = 0 and t.bl_flag=1
+          <if test="lineName !=null and lineName !=''">
+               and t.line_name like '%' || #{lineName,jdbcType=VARCHAR} || '%'
+          </if>
+    </select>
+    
+    <!-- 查询车牌号-->
+     <select id="queryVehicelCode" parameterType="java.util.Map" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseClassesVo">
+         select t.vehicel_no vehicelNo,t.vehicel_code vehicelCode  from  T_BASE_VEHICLE t where t.del_flag = 0 
+          <if test="vehicelNo !=null and vehicelNo !=''">
+               and t.vehicel_no like '%' || #{vehicelNo,jdbcType=VARCHAR} || '%'
+          </if>
+          <if test="blFlag != null and blFlag != ''">
+            AND t.bl_flag = #{blFlag}
+        </if>
+    </select>
+    <!-- 查询车型 -->
+    <select id="queryCarTypeByvehicelNo" parameterType="string" resultType="int">
+        select t.vehicel_model from T_BASE_VEHICLE t where t.vehicel_Code=#{vehicelCode} 
+    </select>
+</mapper>

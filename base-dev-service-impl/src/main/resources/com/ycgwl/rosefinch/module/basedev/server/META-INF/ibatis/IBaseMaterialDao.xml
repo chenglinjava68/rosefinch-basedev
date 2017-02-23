@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseMaterialDao">
+
+<!-- <delete id="getMaterialNameByInsert" parameterType="java.lang.String" resultType="java.lang.String">
+    UPDATE  T_BASE_AREA  SET DEL_FLAG = 1
+    WHERE AREA_ID = #{areaId , jdbcType=DECIMAL}
+</delete> -->
+<select id="preUpdateGoods" parameterType="java.lang.Long" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseMaterialVo">
+ select 
+        T.ID id,
+        T.GOODS_CODE goodsCode,
+        T.GOODS_NAME goodsName,
+        T.CATEGORY category ,
+        T.UNIT_NUMBER unitNumber,
+        T.UNIT_NAME unitName,
+        T.UNIT_MONEY unitMoney,
+        T.BL_BALANCE blBalance,
+        T.REMARK remark
+        FROM T_MATERIAL_ITEM T
+        WHERE
+            T.ID = #{id ,jdbcType=DECIMAL}
+            AND T.DEL_FLAG = 0
+</select>
+<select id="getMaterialNameByInsert" parameterType="java.lang.String" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseMaterialVo">
+    SELECT GOODS_NAME goodsName , ID id
+    FROM T_MATERIAL_ITEM 
+    WHERE GOODS_NAME = #{goodsName , jdbcType=VARCHAR}
+    AND DEL_FLAG = 0
+</select>
+<select id="getMaterialCodeByInsert" parameterType="java.lang.String" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseMaterialVo">
+    SELECT GOODS_CODE goodsCode , ID id
+    FROM T_MATERIAL_ITEM 
+    WHERE GOODS_CODE = #{goodsCode , jdbcType=DECIMAL}
+    AND DEL_FLAG = 0
+</select>
+<delete id="deletegoods" parameterType="java.lang.Long">
+    UPDATE 
+    T_MATERIAL_ITEM
+    SET DEL_FLAG = 1
+    WHERE 
+    ID = #{id ,  jdbcType=DECIMAL}
+    AND DEL_FLAG = 0
+</delete>
+<update id="batchDeleteByIds" parameterType="java.util.List">
+<foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+    UPDATE  T_MATERIAL_ITEM  SET DEL_FLAG = 1
+    WHERE  ID = #{item , jdbcType=DECIMAL}
+    AND DEL_FLAG = 0
+   </foreach>
+</update>
+</mapper>

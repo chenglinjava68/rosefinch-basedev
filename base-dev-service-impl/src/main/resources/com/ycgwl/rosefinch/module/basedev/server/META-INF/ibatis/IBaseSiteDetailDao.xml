@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseSiteDetailDao">
+	
+	<!-- 门店额外信息ResultMap -->
+	<resultMap type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteDetailEntity" id="baseSiteDetailResultMap">
+		<id property="siteDetailId" column="DETAIL_SITE_DETAIL_ID"/>
+		<result property="siteCode" column="DETAIL_SITE_CODE" />
+		<result property="phone" column="DETAIL_PHONE" />
+		<result property="principal" column="DETAIL_PRINCIPAL" />
+		<result property="manager" column="DETAIL_MANAGER" />
+		<result property="salePhone" column="DETAIL_SALE_PHONE" />
+		<result property="fax" column="DETAIL_FAX" />
+		<result property="notDispatchRange" column="DETAIL_NOT_DISPATCH_RANGE" />
+		<result property="dispatchRange" column="DETAIL_DISPATCH_RANGE" />
+		<result property="specserviceRange" column="DETAIL_SPECSERVICE_RANGE" />
+		<result property="dispatchTimeLimit" column="DETAIL_DISPATCH_TIME_LIMIT" />
+		<result property="managerPhone" column="DETAIL_MANAGER_PHONE" />
+		<result property="dispatchMoneyDesc" column="DETAIL_DISPATCH_MONEY_DESC" />
+		<result property="exigencePhone" column="DETAIL_EXIGENCE_PHONE" />
+		<result property="financialAccount" column="DETAIL_FINANCIAL_ACCOUNT" />
+		<result property="siteDesc" column="DETAIL_SITE_DESC" />
+		<result property="sitematerial" column="DETAIL_SITEMATERIAL" />
+		<result property="remark" column="DETAIL_REMARK" />
+	</resultMap>
+	
+	<!-- 门店额外信息Column -->
+	<sql id="columns_of_t_base_site_detail">
+		DETAIL.SITE_DETAIL_ID DETAIL_SITE_DETAIL_ID,
+		DETAIL.SITE_CODE DETAIL_SITE_CODE,
+		DETAIL.PHONE DETAIL_PHONE,
+		DETAIL.PRINCIPAL DETAIL_PRINCIPAL,
+		DETAIL.MANAGER DETAIL_MANAGER,
+		DETAIL.SALE_PHONE DETAIL_SALE_PHONE,
+		DETAIL.FAX DETAIL_FAX,
+		DETAIL.NOT_DISPATCH_RANGE DETAIL_NOT_DISPATCH_RANGE,
+		DETAIL.DISPATCH_RANGE DETAIL_DISPATCH_RANGE,
+		DETAIL.SPECSERVICE_RANGE DETAIL_SPECSERVICE_RANGE,
+		DETAIL.DISPATCH_TIME_LIMIT DETAIL_DISPATCH_TIME_LIMIT,
+		DETAIL.MANAGER_PHONE DETAIL_MANAGER_PHONE,
+		DETAIL.DISPATCH_MONEY_DESC DETAIL_DISPATCH_MONEY_DESC,
+		DETAIL.EXIGENCE_PHONE DETAIL_EXIGENCE_PHONE,
+		DETAIL.FINANCIAL_ACCOUNT DETAIL_FINANCIAL_ACCOUNT,
+		DETAIL.SITE_DESC DETAIL_SITE_DESC,
+		DETAIL.SITEMATERIAL DETAIL_SITEMATERIAL,
+		DETAIL.REMARK DETAIL_REMARK
+	</sql>
+	
+</mapper>
+

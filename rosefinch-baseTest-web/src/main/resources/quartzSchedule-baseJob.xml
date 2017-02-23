@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:cxf="http://cxf.apache.org/core"
+	xsi:schemaLocation="
+			http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+			http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<!-- job -->
+	<bean id="syncActiveDirectoryBean"
+		class="com.ycgwl.rosefinch.module.basedev.server.job.SyncActiveDirectoryBean">
+		<constructor-arg name="host" value="${SyncActiveDirectoryJob.host}"></constructor-arg>
+		<constructor-arg name="port" value="${SyncActiveDirectoryJob.port}"></constructor-arg>
+		<constructor-arg name="username"
+			value="${SyncActiveDirectoryJob.username}"></constructor-arg>
+		<constructor-arg name="password"
+			value="${SyncActiveDirectoryJob.password}"></constructor-arg>
+	</bean>
+
+
+	<bean id="baseJobJdbcConfig" class="com.ycgwl.framework.quartz.jobgrid.SimpleConfigFactory">
+		<property name="instanceId" value="baseJob55" />
+		<property name="jdbcDriver" value="${db.driverClassName}" />
+		<property name="jdbcURL" value="${db.url}" />
+		<property name="jdbcUser" value="${db.username}" />
+		<property name="jdbcPassword" value="${db.password}" />
+	</bean>
+
+	<bean id="threadPoolTaskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="maxPoolSize" value="${baseJob.maxPoolSize}" />
+		<property name="queueCapacity" value="${baseJob.queueCapacity}" />
+		<property name="corePoolSize" value="${baseJob.corePoolSize}" />
+		<property name="keepAliveSeconds" value="${baseJob.keepAliveSeconds}" />
+		<property name="rejectedExecutionHandler">
+			<bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+		</property>
+	</bean>
+</beans>
+
+

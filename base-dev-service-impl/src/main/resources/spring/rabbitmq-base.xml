@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xmlns:task="http://www.springframework.org/schema/task"  
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/rabbit
+     http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+     http://www.springframework.org/schema/task  
+    http://www.springframework.org/schema/task/spring-task-4.1.xsd">
+    <!-- mq连接工厂 -->
+    <import resource="classpath*:rabbitmq-factory.xml" />
+		<!-- 创建rabbitTemplate 消息模板类 -->
+	<bean id="rabbitTemplate" class="org.springframework.amqp.rabbit.core.RabbitTemplate">
+		<constructor-arg ref="rabbitConnFactory"></constructor-arg>
+		<property name="exchange" value="${rabbitmq.exchangeBase}" />
+	</bean>
+	<!-- queue -->
+	<rabbit:queue  name="${rabbitmq.queueEwb}" durable="true" auto-delete="false" exclusive="false" />
+	
+	<!-- 消息接收者 -->
+	<bean id="messageConsumer" class="com.ycgwl.rosefinch.module.basedev.server.customer.MessageConsumer"></bean>
+	
+	<!-- queue litener  观察 监听模式 当有消息到达时会通知监听在对应的队列上的监听对象-->
+    
+    <rabbit:listener-container connection-factory="rabbitConnFactory" concurrency="5">
+             <rabbit:listener queues="${rabbitmq.queueEwb}" ref="messageConsumer"/>
+    </rabbit:listener-container>
+</beans>

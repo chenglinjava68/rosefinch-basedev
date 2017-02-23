@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+	<Resource name="jdbc/rosefinch" auth="Container" type="javax.sql.DataSource"
+		username="ycgxsh" password="ycgxsh" driverClassName="oracle.jdbc.driver.OracleDriver"
+		url="jdbc:oracle:thin:@172.16.254.161:1521/orcl" maxActive="2"
+		maxIdle="2" />
+</Context>

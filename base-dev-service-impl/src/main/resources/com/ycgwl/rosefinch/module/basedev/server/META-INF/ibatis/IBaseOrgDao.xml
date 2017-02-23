@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseOrgDao">
+	<resultMap type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity" id="BaseOrgEntityResult">
+	</resultMap>
+	
+	<!-- <select id="getBaseOrgListByUpOrgCode" parameterType="String" resultMap="BaseOrgEntityResult">
+		SELECT * FROM T_BASE_ORG WHERE up_org_code=#{upOrgCode}
+	</select> -->
+	
+	<select id="queryByOrgName" parameterType="string" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity">
+		select org_id orgId,org_code orgCode,up_org_code upOrgCode from t_base_org where org_name like #{orgName}
+	</select>
+	   <select id="queryByOrgName2" parameterType="hashmap" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity">
+        select org_name_short orgNameShort,org_name orgName,org_type orgType ,org_id orgId,org_code orgCode,up_org_code upOrgCode from t_base_org 
+        where  
+         <if test="siteName!=null and siteName != ''">
+           org_name like #{siteName} 
+         </if>
+        <if test="siteCode!=null and siteCode != '' and siteName!=null and siteName != ''">
+          or
+         </if>
+          <if test="siteCode!=null and siteCode != ''">
+           org_code = #{siteCode}
+         </if>
+           and org_type in (1,6,7,9)  
+        
+    </select>
+	
+	<update id="updateBlFlag" parameterType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity">
+		update t_base_org set bl_flag=#{blFlag} where org_code=#{orgCode}
+	</update>
+	
+	<select id="uniqueCheckByOrgCode" parameterType="string" resultType="int">
+		select count(1) from t_base_org t where t.org_code=#{orgCode}
+	</select>
+	<select id="uniqueCheckByOrgName" parameterType="hashmap" resultType="int">
+		select count(1)
+		  from t_base_org t
+		 where t.org_name = #{orgName} and t.UP_ORG_CODE = #{upOrgCode}
+		 <if test="state == 'update'">
+		   and t.org_code != #{orgCode}
+		 </if>
+	</select>
+	<select id="uniqueCheckByOrgNameShort" parameterType="hashmap" resultType="int">
+		select count(1)
+		  from t_base_org t
+		 where t.org_name_short = #{orgNameShort} and t.UP_ORG_CODE = #{upOrgCode}
+		 <if test="state == 'update'">
+		   and t.org_code != #{orgCode}
+		 </if>
+		 
+	</select>
+	
+	
+	<!-- 批量修改启用状态 -->
+	<update id="batchUpdateBlFlag" parameterType="hashmap">
+		UPDATE t_base_org org SET org.bl_flag = #{blFlag}
+		WHERE org.del_flag=0 and (1=2
+		<if test="codeList != null">
+			or org.org_code in 
+			<foreach item = "code" collection = "codeList" open = "(" separator = "," close = ")" >
+				#{code}
+			</foreach>
+		</if>
+		)
+	</update>
+	
+	
+	
+	
+	<insert id="batchInsertOrg" parameterType="java.util.List">
+    INSERT INTO t_base_org
+       (ORG_ID,
+		ORG_CODE,
+		ORG_NAME,
+		ORG_NAME_SHORT,
+		ORDER_BY,
+		UP_ORG_CODE,
+		ORG_TYPE,
+		DEFAULT_CURRENCY,
+		COUNTRY,
+		PROVINCE,
+		CITY,
+		COUNTY,
+		ORG_ADDRESS,
+		TRANSFER_NOTIFY_MOBILE,
+		REMARK,
+		CREATE_TIME,
+		CREATE_USER_CODE,
+		MODIFY_TIME,
+		MODIFY_USER_CODE,
+		BL_FLAG,
+		DEL_FLAG)
+	    <foreach collection="list" item="main" index="index" separator="UNION ALL">
+	      SELECT #{main.orgId,jdbcType=BIGINT},
+	      #{main.orgCode,jdbcType=VARCHAR},
+	      #{main.orgName,jdbcType=VARCHAR},
+	      #{main.orgNameShort,jdbcType=VARCHAR},
+	      #{main.orderBy,jdbcType=INTEGER},
+	      #{main.upOrgCode,jdbcType=VARCHAR},
+	      #{main.orgType,jdbcType=VARCHAR},
+	      #{main.defaultCurrency,jdbcType=VARCHAR},
+	      #{main.country,jdbcType=VARCHAR},
+	      #{main.province,jdbcType=VARCHAR},
+	      #{main.city,jdbcType=VARCHAR},
+	      #{main.county,jdbcType=VARCHAR},
+	      #{main.orgAddress,jdbcType=VARCHAR},
+	      #{main.transferNotifyMobile,jdbcType=VARCHAR},
+	      #{main.remark,jdbcType=VARCHAR},
+	      #{main.createTime,jdbcType=TIMESTAMP},
+	      #{main.createUserCode,jdbcType=VARCHAR},
+	      #{main.modifyTime,jdbcType=TIMESTAMP},
+	      #{main.modifyUserCode,jdbcType=VARCHAR},
+	      #{main.blFlag,jdbcType=INTEGER},
+	      #{main.delFlag,jdbcType=INTEGER}
+	      FROM DUAL
+	    </foreach>
+  </insert>
+  
+  
+  <!-- 判断组织机构是否存在 -->
+  <select id="isExistByGUID" parameterType="string" resultType="boolean">
+  	SELECT CASE
+	         WHEN COUNT(1) >= 1 THEN
+	          1
+	         ELSE
+	          0
+	       END
+	  FROM t_base_org org
+	 WHERE org.DEL_FLAG=0 AND org.guid = #{GUID}
+  </select>
+  
+  <!-- 通过编码更新 -->
+  <update id="updateByGUID" parameterType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity" >
+  	UPDATE t_base_org org
+	   SET org.ORG_NAME               = #{orgName,jdbcType=VARCHAR},
+	       org.ORG_NAME_SHORT         = #{orgNameShort,jdbcType=VARCHAR},
+	       org.ORDER_BY               = #{orderBy,jdbcType=INTEGER},
+	       org.UP_ORG_CODE            = #{upOrgCode,jdbcType=VARCHAR},
+	       org.ORG_TYPE               = #{orgType,jdbcType=VARCHAR},
+	       org.DEFAULT_CURRENCY       = #{defaultCurrency,jdbcType=VARCHAR},
+	       org.COUNTRY                = #{country,jdbcType=VARCHAR},
+	       org.PROVINCE               = #{province,jdbcType=VARCHAR},
+	       org.CITY                   = #{city,jdbcType=VARCHAR},
+	       org.COUNTY                 = #{county,jdbcType=VARCHAR},
+	       org.ORG_ADDRESS            = #{orgAddress,jdbcType=VARCHAR},
+	       org.TRANSFER_NOTIFY_MOBILE = #{transferNotifyMobile,jdbcType=VARCHAR},
+	       org.REMARK                 = #{remark,jdbcType=VARCHAR},
+	       org.MODIFY_TIME            = #{modifyTime,jdbcType=TIMESTAMP},
+	       org.MODIFY_USER_CODE       = #{modifyUserCode,jdbcType=VARCHAR},
+	       org.BL_FLAG                = #{blFlag,jdbcType=INTEGER}
+	 WHERE org.del_flag = 0
+	   AND ORG.guid = #{guid,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <!-- ++++++++++++++++++++++ -->
+  
+  
+  
+  
+  
+  <resultMap id="BaseResultMap" type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseOrgEntity" >
+    <id column="MAIN_ORG_ID" property="orgId" jdbcType="BIGINT" />
+    <result column="MAIN_ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+    <result column="MAIN_ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+    <result column="MAIN_ORG_NAME_SHORT" property="orgNameShort" jdbcType="VARCHAR" />
+    <result column="MAIN_ORDER_BY" property="orderBy" jdbcType="INTEGER" />
+    <result column="MAIN_UP_ORG_CODE" property="upOrgCode" jdbcType="VARCHAR" />
+    <result column="MAIN_ORG_TYPE" property="orgType" jdbcType="VARCHAR" />
+    <result column="MAIN_DEFAULT_CURRENCY" property="defaultCurrency" jdbcType="VARCHAR" />
+    <result column="MAIN_COUNTRY" property="country" jdbcType="VARCHAR" />
+    <result column="MAIN_PROVINCE" property="province" jdbcType="VARCHAR" />
+    <result column="MAIN_CITY" property="city" jdbcType="VARCHAR" />
+    <result column="MAIN_COUNTY" property="county" jdbcType="VARCHAR" />
+    <result column="MAIN_ORG_ADDRESS" property="orgAddress" jdbcType="VARCHAR" />
+    <result column="MAIN_TRANSFER_NOTIFY_MOBILE" property="transferNotifyMobile" jdbcType="VARCHAR" />
+    <result column="MAIN_REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="MAIN_CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="MAIN_CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+    <result column="MAIN_MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="MAIN_MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+    <result column="MAIN_BL_FLAG" property="blFlag" jdbcType="INTEGER" />
+    <result column="MAIN_DEL_FLAG" property="delFlag" jdbcType="INTEGER" />
+    <result column="MAIN_GUID" property="guid" jdbcType="VARCHAR" />
+    <result column="MAIN_HAS_CHILDREN" property="hasChildren" jdbcType="BOOLEAN" />
+  </resultMap>
+  
+  	<!-- t_base_org表的所有字段 -->
+  	<sql id="columns_of_t_base_org">
+		MAIN.ORG_ID MAIN_ORG_ID,
+		MAIN.ORG_CODE MAIN_ORG_CODE,
+		MAIN.ORG_NAME MAIN_ORG_NAME,
+		MAIN.ORG_NAME_SHORT MAIN_ORG_NAME_SHORT,
+		MAIN.ORDER_BY MAIN_ORDER_BY,
+		MAIN.UP_ORG_CODE MAIN_UP_ORG_CODE,
+		MAIN.ORG_TYPE MAIN_ORG_TYPE,
+		MAIN.DEFAULT_CURRENCY MAIN_DEFAULT_CURRENCY,
+		MAIN.COUNTRY MAIN_COUNTRY,
+		MAIN.PROVINCE MAIN_PROVINCE,
+		MAIN.CITY MAIN_CITY,
+		MAIN.COUNTY MAIN_COUNTY,
+		MAIN.ORG_ADDRESS MAIN_ORG_ADDRESS,
+		MAIN.TRANSFER_NOTIFY_MOBILE MAIN_TRANSFER_NOTIFY_MOBILE,
+		MAIN.REMARK MAIN_REMARK,
+		MAIN.CREATE_TIME MAIN_CREATE_TIME,
+		MAIN.CREATE_USER_CODE MAIN_CREATE_USER_CODE,
+		MAIN.MODIFY_TIME MAIN_MODIFY_TIME,
+		MAIN.MODIFY_USER_CODE MAIN_MODIFY_USER_CODE,
+		MAIN.BL_FLAG MAIN_BL_FLAG,
+		MAIN.DEL_FLAG MAIN_DEL_FLAG,
+		MAIN.GUID MAIN_GUID
+	</sql>
+	
+	<!-- 获得子节点 -->
+	<select id="getChildren" parameterType="string" resultMap="BaseResultMap">
+		select
+		<include refid="columns_of_t_base_org"></include>
+		<![CDATA[
+		,
+		]]>
+       (SELECT CASE
+                 WHEN COUNT(1) >= 1 THEN
+                  1
+                 ELSE
+                  0
+               END
+          FROM t_base_org a
+         WHERE a.up_org_code = MAIN.org_code) MAIN_HAS_CHILDREN 
+  		FROM t_base_org MAIN
+		WHERE MAIN.up_org_code = #{upOrgCode} order by MAIN.ORDER_BY ASC
+	</select>
+  
+	
+</mapper>

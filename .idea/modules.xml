@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/base-dev/base-dev.iml" filepath="$PROJECT_DIR$/base-dev/base-dev.iml" />
+      <module fileurl="file://$PROJECT_DIR$/base-dev-config/base-dev-config.iml" filepath="$PROJECT_DIR$/base-dev-config/base-dev-config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/base-dev-model/base-dev-model.iml" filepath="$PROJECT_DIR$/base-dev-model/base-dev-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/base-dev-service/base-dev-service.iml" filepath="$PROJECT_DIR$/base-dev-service/base-dev-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/base-dev-service-impl/base-dev-service-impl.iml" filepath="$PROJECT_DIR$/base-dev-service-impl/base-dev-service-impl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rosefinch-base-web/rosefinch-base-web.iml" filepath="$PROJECT_DIR$/rosefinch-base-web/rosefinch-base-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rosefinch-baseTest-web/rosefinch-baseTest-web.iml" filepath="$PROJECT_DIR$/rosefinch-baseTest-web/rosefinch-baseTest-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rosefinch-basedev.iml" filepath="$PROJECT_DIR$/rosefinch-basedev.iml" />
+    </modules>
+  </component>
+</project>

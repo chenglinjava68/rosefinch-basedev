@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseRouteDetailDao">
+	<insert id="insertBatchDetail" parameterType="java.util.List">
+        INSERT INTO T_BASE_ROUTE_DETAIL
+        (ID, ROUTE_CODE, ORDER_BY, VIA_TYPE, CURR_SITE_CODE, NEXT_SITE_CODE, 
+        CURR_REGION_CODE, NEXT_REGION_CODE, ARRIVE_MILEAGE, ARRIVE_TIME, STAY_TIME, 
+        CLASS_TYPE, REMARK)
+		<foreach collection="list" item="item" index="index"
+			separator="UNION ALL">
+            SELECT #{item.id,jdbcType=BIGINT},
+            #{item.routeCode,jdbcType=VARCHAR},
+            #{item.orderBy,jdbcType=INTEGER},
+            #{item.viaType,jdbcType=INTEGER},
+            #{item.currSiteCode,jdbcType=VARCHAR},
+            #{item.nextSiteCode,jdbcType=VARCHAR}, 
+            #{item.currRegionCode,jdbcType=VARCHAR},
+            #{item.nextRegionCode,jdbcType=VARCHAR},
+            #{item.arriveMileage,jdbcType=DOUBLE},
+            #{item.arriveTime,jdbcType=BIGINT},
+            #{item.stayTime,jdbcType=BIGINT}, 
+            #{item.classType,jdbcType=INTEGER},
+            #{item.remark,jdbcType=VARCHAR} 
+            FROM DUAL
+		</foreach>
+	</insert>
+    
+	<delete id="deleteAllByRouteCode" parameterType="string">
+        DELETE FROM  
+        T_BASE_ROUTE_DETAIL
+        WHERE 
+        ROUTE_CODE = #{routeCode}
+	</delete>
+	
+	<select
+        id="queryBaseRouteDetailListByRouteCode"
+        parameterType="string"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseRouteDetailEntity">
+        SELECT ID as id, ROUTE_CODE as routeCode, ORDER_BY as orderBy, VIA_TYPE as viaType, CURR_SITE_CODE as currSiteCode, NEXT_SITE_CODE as nextSiteCode,
+        CURR_REGION_CODE as currRegionCode, NEXT_REGION_CODE as nextRegionCode, ARRIVE_MILEAGE as arriveMileage, ARRIVE_TIME as arriveTime,STAY_TIME as stayTime,
+        CLASS_TYPE as classType, REMARK as remark
+        FROM T_BASE_ROUTE_DETAIL WHERE ROUTE_CODE = #{routeCode} ORDER BY ORDER_BY ASC
+    </select>
+   
+</mapper>

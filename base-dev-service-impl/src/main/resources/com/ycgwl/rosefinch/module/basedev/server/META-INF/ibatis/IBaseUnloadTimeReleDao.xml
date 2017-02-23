@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseUnloadTimeReleDao">
+    <select
+        id="getByConfigCodeAndSites"
+        parameterType="hashmap"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+    	select t.site_id  as siteId, p.siteCode AS siteCode, p.siteNameShort AS siteNameShort from 
+        (select distinct g.site_code, g.config_code, 1 as site_id from t_unload_time_rele g where g.config_code=#{configCode})
+        t  right join
+        (       
+        <foreach
+            collection="list"
+            item="item"
+            index="index"
+            separator="UNION ALL"> 
+            select
+             #{item.orderBy,jdbcType=VARCHAR} as orderBy,
+             #{item.siteCode,jdbcType=VARCHAR} as siteCode,
+             #{item.siteNameShort,jdbcType=VARCHAR} as siteNameShort
+            from dual 
+        </foreach>
+        )
+        p on t.SITE_CODE = p.siteCode
+        order by p.orderBy
+    </select>
+    
+    <delete id="deleteAllReles" parameterType="string">
+        DELETE FROM  
+        T_UNLOAD_TIME_RELE
+        WHERE 
+        CONFIG_CODE = #{configCode}
+    </delete>
+    
+    <select
+        id="getSiteByConfigCode"
+        parameterType="string"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseSiteEntity">
+         SELECT S.SITE_CODE AS SITECODE, S.SITE_NAME_SHORT AS SITENAMESHORT
+          FROM T_UNLOAD_TIME_RELE T
+         INNER JOIN T_BASE_SITE S
+            ON T.SITE_CODE = S.SITE_CODE
+         WHERE T.CONFIG_CODE = #{configCode}
+    </select>
+    
+</mapper>

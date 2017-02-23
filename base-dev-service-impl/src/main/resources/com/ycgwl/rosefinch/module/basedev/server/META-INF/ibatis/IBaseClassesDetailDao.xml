@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseClassesDetailDao">
+	<!-- 根据classesCode查找班次详情 -->
+	<select id="queryClassesDetailByClassesId" parameterType="java.lang.String"
+	  resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseClassesDetailVo">
+		select t.id               id,
+       t1.classes_name    classesName,
+       t.order_by         orderBy,
+       t.via_type         viaType,
+       t.curr_site_code   currSiteCode,
+       t.next_site_code   nextSiteCode,
+       t.curr_region_code currRegionCode,
+       t.next_region_code nextRegionCode,
+       t.depart_time      departTime,
+       t.arrival_time     arrivalTime,
+       t.arrive_mileage   arriveMileage,
+       t.arrive_time      arriveTime,
+       t.stay_time        stayTime,
+       t.class_type       classType,
+       t.remark           remark
+    from T_BASE_CLASSES_DETAIL t
+    left join T_BASE_CLASSES t1
+    on t1.classes_code = t.classes_code
+        where t.classes_code=#{classesCode} order by (t.order_by) asc
+	</select>
+	<!--根据lineCode查找车线详情  -->
+    <select id="queryCarLineDetailByLineCode" parameterType="java.lang.String"
+      resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseClassesDetailVo">
+      select t.order_by         orderBy,
+       t.via_type         viaType,
+       t.curr_site_code   currSiteCode,
+       t.next_site_code   nextSiteCode,
+       t.curr_region_code currRegionCode,
+       t.next_region_code nextRegionCode,
+       t.arrive_mileage   arriveMileage,
+       t.arrive_time      arriveTime,
+       t.stay_time        stayTime,
+       t.class_type       classType,
+       t.remark           remark
+       from T_BASE_CARLINE_DETAIL t
+      where t.line_Code = #{lineCode}
+      order by (t.order_by) asc
+    </select>
+    <!-- 根据 classesICOde删除详情-->
+    <delete id="deleteClassesDetailByClassesId" parameterType="java.lang.String" >
+         delete T_BASE_CLASSES_DETAIL t 
+         WHERE t.classes_Code=#{classesCode}
+    </delete>
+    <!-- 查询详情根据classesId and orderBy -->
+    <select id="queryByOrder" parameterType="hashmap" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseClassesDetailEntity">
+        select t.id id,t1.classes_name classesName,t.order_by orderBy,t.via_type viaType,t.curr_site_code currSiteCode
+        ,t.next_site_code nextSiteCode,t.curr_region_code  currRegionCode,t.next_region_code nextRegionCode,
+        t.depart_time departTime,t.arrival_time arrivalTime,t.arrive_mileage arriveMileage,
+        t.arrive_time arriveTime,t.stay_time stayTime,t.class_type classType,t.remark remark
+        from T_BASE_CLASSES_DETAIL t  
+        left join T_BASE_CLASSES t1 on t1.classes_Code=t.classes_Code
+        where t.classes_Code=#{classesCode} and t.order_by=#{orderBy}
+    </select>
+</mapper>

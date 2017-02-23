@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseAreaDao">
+
+<delete id="deleteAreaById" parameterType="java.lang.Long">
+<!--  1 ：删除-->
+    UPDATE  T_BASE_AREA  SET DEL_FLAG = 1
+    WHERE AREA_ID = #{areaId , jdbcType=DECIMAL}
+    AND DEL_FLAG = 0
+</delete>
+<update id="batchDeleteById" parameterType="java.util.List">
+<foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+    UPDATE  T_BASE_AREA  SET DEL_FLAG = 1
+    WHERE AREA_ID = #{item , jdbcType=DECIMAL}
+    AND DEL_FLAG = 0
+   </foreach>
+</update>
+<update id="stopAndstartAreaById" parameterType="map">
+<!--  0 ：停用-->
+    UPDATE  T_BASE_AREA  SET BL_FLAG = #{blFlag , jdbcType=DECIMAL} ,MODIFY_USER_CODE = #{modifyUserCode ,jdbcType=VARCHAR},
+    MODIFY_TIME = #{modifyTime, jdbcType=TIMESTAMP}
+    WHERE AREA_ID in
+    <foreach collection="areaId" item="item" index="index" open="(" close=")" separator=",">
+        #{item , jdbcType=DECIMAL}
+   </foreach>
+     AND DEL_FLAG = 0
+</update>
+<select id="getAreaCodeByInsert" parameterType="java.lang.String" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseAreaVo">
+    SELECT AREA_CODE areaCode ,AREA_ID areaId
+    FROM T_BASE_AREA 
+    WHERE AREA_CODE = #{areaCode , jdbcType=VARCHAR}
+    AND  DEL_FLAG = 0
+</select>
+<select id="getAreaNameByInsert" parameterType="java.lang.String" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseAreaVo">
+    SELECT AREA_NAME areaName,AREA_ID areaId
+    FROM T_BASE_AREA 
+    WHERE AREA_NAME = #{areaName , jdbcType=VARCHAR}
+     AND  DEL_FLAG = 0
+</select>
+</mapper>

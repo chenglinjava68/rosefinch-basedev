@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+		<!-- Redis缓存-->
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxActive" value="${redis.pool.maxActive}"></property>
+		<property name="maxIdle" value="${redis.pool.maxIdle}"></property>
+		<property name="maxWait" value="${redis.pool.maxWait}"></property>
+		<property name="testOnBorrow" value="${redis.pool.testOnBorrow}"></property>
+		<property name="testOnReturn" value="${redis.pool.testOnReturn}"></property>
+	</bean>
+	
+	<bean id="client" class="com.ycgwl.cache.redis.RedisClient">
+		<property name="poolConfig" ref="poolConfig"></property>
+		<property name="host" value="${redis.host}"></property> 
+		<property name="port" value="${redis.port}"></property>
+		<!-- <property name="password" value="${redis.password}"></property> -->
+	</bean>
+	
+	<bean id="storage"
+		class="com.ycgwl.cache.storage.RedisStorage">
+		<property name="client" ref="client"></property>
+	</bean>
+	
+	
+	<!-- 产品缓存 -->
+	<bean id="baseProductEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseProductEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseProductEntityCache.timeOut}"></property>
+	</bean>
+	<!-- 行政区域缓存 -->
+	<bean id="baseRegionEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseRegionEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseRegionEntityCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 组织架构缓存 -->
+	<bean id="baseOrgEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseOrgEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseOrgEntityCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 网点缓存 -->
+	<bean id="baseSiteEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseSiteEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseSiteEntityCache.timeOut}"></property>
+	</bean>
+	<!-- 应用系统信息缓存 -->
+	<bean id="baseAppInfoEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseAppInfoEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseAppInfoEntityCache.timeOut}"></property>
+	</bean>
+	<!--资金路由缓存 -->
+	<bean id="baseSiteFinLineEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseSiteFinLineEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseSiteFinLineEntityCache.timeOut}"></property>
+	</bean>
+		<!--资金路由缓存 -->
+	<bean id="siteFinLineCodeAndLineTypeCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.SiteFinLineCodeAndLineTypeCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.SiteFinLineCodeAndLineTypeCache.timeOut}"></property>
+	</bean>
+	<!-- 接口管理缓存 -->
+	<bean id="baseInterfaceEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseInterfaceEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseInterfaceEntityCache.timeOut}"></property>
+        <!-- rosefinch.base.BaseInterfaceEntityCache.timeOut 依赖于 dataResource-config.properties中的rosefinch.base.BaseInterfaceEntityCache.timeOut时间 -->
+	</bean>
+	<!-- 网点缓存（名称to编号） -->
+	<bean id="baseSiteEntityNameCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseSiteEntityNameCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseSiteEntityNameCache.timeOut}"></property>
+        <!-- rosefinch.base.BaseInterfaceEntityCache.timeOut 依赖于 dataResource-config.properties中的rosefinch.base.BaseInterfaceEntityCache.timeOut时间 -->
+	</bean>
+	<!-- 网点缓存（名称to编号） -->
+	<bean id="baseConfigEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseConfigEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseConfigEntityCache.timeOut}"></property>
+        <!-- rosefinch.base.BaseInterfaceEntityCache.timeOut 依赖于 dataResource-config.properties中的rosefinch.base.BaseInterfaceEntityCache.timeOut时间 -->
+	</bean>
+	<!-- 通过产品名称获取产品编码缓存 -->
+	<bean id="GetProductCodeByProductNameCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.GetProductCodeByProductNameCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.GetProductCodeByProductNameCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 通过行政区域名称获得行政区域编码缓存 -->
+	<bean id="GetRegionCodeByRegionNameCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.GetRegionCodeByRegionNameCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.GetRegionCodeByRegionNameCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 级联获取行政区域List缓存 -->
+	<bean id="BaseRegionListCascadeCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseRegionListCascadeCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseRegionListCascadeCache.timeOut}"></property>
+	</bean>
+	
+		<!-- 缓存 -->
+	<!-- 功能权限缓存提供者 -->
+	<bean id="userDao" class="com.ycgwl.rosefinch.module.authorization.server.dao.impl.UserDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="functionDao" class="com.ycgwl.rosefinch.module.authorization.server.dao.impl.FunctionDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="functionEntityCache" class="com.ycgwl.rosefinch.module.authorization.server.cache.FunctionEntityCache">
+		<property name="functionDao" ref="functionDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.auth.FunctionEntityCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 功能菜单缓存 -->
+	<bean id="functionMenuCache" class="com.ycgwl.rosefinch.module.authorization.server.cache.FunctionMenuCache" >
+		<property name="functionDao" ref="functionDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.auth.FunctionMenuCache.timeOut}"></property>
+	</bean>
+	<!-- 用户数据缓存提供者 -->
+	<!-- 用户缓存 -->
+	<bean id="userCache" class="com.ycgwl.rosefinch.module.authorization.server.cache.UserCache">
+		<property name="userDao" ref="userDao"></property>
+		<property name="employeeDao" ref="employeeDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.auth.UserCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 用户数据缓存 -->
+	<bean id="departmentService" class="com.ycgwl.rosefinch.module.organization.server.service.impl.DepartmentService">
+		<property name="departmentDao" ref="departmentDao"></property>
+	</bean>
+	<bean id="userDeptAuthorityDao" class="com.ycgwl.rosefinch.module.authorization.server.dao.impl.UserDeptAuthorityDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="userDeptAuthorityService" class="com.ycgwl.rosefinch.module.authorization.server.service.impl.UserDeptAuthorityService">
+		<property name="userDeptAuthorityDao" ref="userDeptAuthorityDao"/>
+		<property name="departmentService" ref="departmentService"/>
+	</bean>
+	<bean id="userDeptAuthorityCache" class="com.ycgwl.rosefinch.module.authorization.server.cache.UserDeptAuthorityCache" >
+		<property name="userDeptAuthorityService" ref="userDeptAuthorityService"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.auth.UserDeptAuthorityCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 部门缓存 -->
+	<!-- 部门数据访问 -->
+	<bean id="departmentDao" class="com.ycgwl.rosefinch.module.organization.server.dao.impl.DepartmentDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 职员数据访问 -->
+	<bean id="employeeDao" class="com.ycgwl.rosefinch.module.organization.server.dao.impl.EmployeeDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="departmentCache" class="com.ycgwl.rosefinch.module.organization.server.cache.DepartmentCache" >
+		<property name="departmentDao" ref="departmentDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.auth.DepartmentCache.timeOut}"></property>
+	</bean>
+	
+	<bean id="departmentDirectChildCache" class="com.ycgwl.rosefinch.module.organization.server.cache.DepartmentDirectChildCache" >
+		<property name="departmentDao" ref="departmentDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.auth.DepartmentDirectChildCache.timeOut}"></property>
+	</bean>
+	<!--员工缓存-->
+	<bean id="EmployeeCache" class="com.ycgwl.rosefinch.module.organization.server.cache.EmployeeCache" >
+		<property name="employeeDao" ref="employeeDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.auth.EmployeeCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 缓存 -->
+	<bean id="dictionaryDao" class="com.ycgwl.rosefinch.module.dict.server.dao.impl.DictionaryDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="dictEntityCache" class="com.ycgwl.rosefinch.module.dict.server.cache.DictEntityCache">
+		<property name="dictionaryDao" ref="dictionaryDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.dict.DictEntityCache.timeOut}"></property>
+	</bean>
+	
+	<bean id="dictDataCache" class="com.ycgwl.rosefinch.module.dict.server.cache.DictDataCache">
+		<property name="dictionaryDao" ref="dictionaryDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.dict.DictEntityCache.timeOut}"></property>
+	</bean>
+	
+	<bean id="dictionaryDataEntityCache" class="com.ycgwl.rosefinch.module.dict.server.cache.DictDataValueNameCache">
+		<property name="dictionaryDao" ref="dictionaryDao"></property>
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${common.dict.DictEntityCache.timeOut}"></property>
+	</bean>
+	
+	<!-- 片区缓存 -->
+	<bean id="baseAreaEntityCache" class="com.ycgwl.rosefinch.module.basedev.server.cache.base.BaseAreaEntityCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${rosefinch.base.BaseAreaEntityCache.timeOut}"></property>
+	</bean>
+	
+</beans>

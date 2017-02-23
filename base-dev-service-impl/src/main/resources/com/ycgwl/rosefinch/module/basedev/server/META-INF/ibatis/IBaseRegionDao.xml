@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseRegionDao">
+	<resultMap type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseRegionEntity" id="baseRegionEntityListResultMap">
+	</resultMap>
+<select id="getBaseRegionEntity" parameterType="map" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseRegionEntity">
+    SELECT 
+    REGION_ID regionId,
+    REGION_CODE regionCode,
+    REGION_NAME regionName,
+    REGION_PARENT regionParent,
+    REGION_PINYIN regionPinyin,
+    REGION_LEVEL regionLevel,
+    IS_HOT ishot ,
+    REMARK remark
+    FROM T_BASE_REGION 
+    WHERE REGION_PARENT = #{regionParent ,jdbcType = VARCHAR}
+    ORDER BY REGION_CODE ASC
+</select>
+	<select id="getProvinceList" resultMap="baseRegionEntityListResultMap">
+		SELECT T.REGION_NAME regionName,
+		       T.REGION_CODE regionCode,
+		       REGION_ID     regionId
+		  FROM T_BASE_REGION T
+		 WHERE T.REGION_LEVEL = 'PROVINCE' and t.DEL_FLAG = 0
+		 ORDER BY REGION_CODE ASC
+	</select>
+
+	<select id="getSubRegionListByRegionParent" parameterType="string"
+		resultMap="baseRegionEntityListResultMap">
+		SELECT t.REGION_NAME regionName, t.REGION_CODE regionCode
+		  FROM t_base_region t
+		 WHERE t.Region_Parent = #{regionParent} and t.DEL_FLAG = 0
+		 ORDER BY t.REGION_CODE ASC
+	</select>
+
+	<select id="getByRegionCode" parameterType="string"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseRegionEntity">
+		SELECT t.REGION_NAME regionName, t.REGION_CODE regionCode
+		  FROM t_base_region t
+		 WHERE t.REGION_CODE = #{regionCode} and t.DEL_FLAG = 0
+	</select>
+
+	<select id="getHotCityList"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseRegionEntity">
+		select distinct t.city_code as code,t.city as name,t.province as
+		parentDistrictName ,t.province_code as parentDistrictCode from
+		T_BASE_REGION t where t.is_hot=1 and t.DEL_FLAG = 0
+	</select>
+	<select id="getCityVoListByPingyingAndHanzi" parameterType="java.lang.String"
+		resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseRegionListVo">
+		select t.region_code as code,
+		t.region_Name as name,
+		t.region_parent as parentDistrictCode,
+		r.REGION_NAME as parentDistrictName
+		from T_BASE_REGION t
+		left join T_BASE_REGION r
+		on t.REGION_PARENT = r.REGION_CODE
+		where t.DEL_FLAG = 0 and t.region_Level ='CITY' and (t.region_Name like
+		'%' || #{name,jdbcType = VARCHAR} || '%'
+		or t.region_pinyin like '%' ||
+		#{name,jdbcType = VARCHAR} || '%'
+		or lower(t.region_pinyin) like
+		'%'||#{name,jdbcType = VARCHAR}|| '%')
+		order by t.REGION_CODE ASC
+	</select>
+	<sql id="getVoPagination">
+		select T.REGION_CODE as code,
+		T.REGION_NAME as name,
+		T.REGION_PARENT as parentDistrictCode,
+		r.REGION_NAME as parentDistrictName
+		from T_BASE_REGION T
+		left join T_BASE_REGION r
+		on t.REGION_PARENT = r.REGION_CODE
+		where t.DEL_FLAG = 0
+		<if test="regionParent !=null and regionParent !=''">
+			AND T.REGION_PARENT = #{regionParent,jdbcType=VARCHAR}
+		</if>
+		<if test="regionLevel !=null and regionLevel != ''">
+			AND T.REGION_LEVEL = #{regionLevel,jdbcType=VARCHAR}
+		</if>
+		<if test="isHot !=null">
+			AND T.IS_HOT=#{isHot,jdbcType=DECIMAL}
+		</if>
+		order by t.REGION_CODE ASC
+	</sql>
+	<select id="getVoPagination" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.BaseRegionListVo" parameterType="java.util.Map">
+		<include refid="getVoPagination" />
+	</select>
+	
+	
+	<!-- 级联获取行政区域List -->
+	<select id="getRegionListCascade" resultMap="baseRegionEntityListResultMap" parameterType="string">
+		SELECT r.region_code  regionCode,
+	       r.region_name  regionName,
+	       r.region_level regionLevel
+		  FROM t_base_region r
+		  <![CDATA[
+		 WHERE r.region_level <> 'COUNTRY'
+		 START WITH r.region_code = #{regionCode}
+		CONNECT BY PRIOR r.region_parent = r.region_code
+		 ORDER BY r.region_code ASC
+		 ]]>
+	</select>
+	
+	
+	
+	
+	<!-- 行政区域ResultMap -->
+	<resultMap id="regionResultMap" type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseRegionEntity">
+		<id column="REGION_ID" property="regionId" jdbcType="BIGINT" />
+		<result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR" />
+		<result column="REGION_NAME" property="regionName" jdbcType="VARCHAR" />
+		<result column="REGION_PINYIN" property="regionPinyin" jdbcType="VARCHAR" />
+		<result column="IS_HOT" property="ishot" jdbcType="INTEGER" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="CREATE_USER_CODE" property="createUserCode" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="MODIFY_USER_CODE" property="modifyUserCode" jdbcType="VARCHAR" />
+		<result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="DEL_FLAG" property="delFlag" jdbcType="INTEGER" />
+		<result column="REGION_PARENT" property="regionParent" jdbcType="VARCHAR" />
+		<result column="REGION_LEVEL" property="regionLevel" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="columns_of_t_base_region">
+		REGION_ID,
+		REGION_CODE,
+		REGION_NAME,
+		REGION_PINYIN,
+		IS_HOT,
+		REMARK,
+		CREATE_USER_CODE,
+		CREATE_TIME,
+		MODIFY_USER_CODE,
+		MODIFY_TIME,
+		DEL_FLAG,
+		REGION_PARENT,
+		REGION_LEVEL
+	</sql>
+	   <select id="getAllSeq" parameterType="map" resultType="string">
+       SELECT DISTINCT '/CN' || SYS_CONNECT_BY_PATH(REGION.REGION_CODE, '/') AS deptSeq
+        FROM T_BASE_REGION REGION 
+        WHERE REGION.REGION_NAME like  #{regionName}
+        START WITH REGION.REGION_PARENT='CN'
+        CONNECT BY NOCYCLE PRIOR REGION.REGION_CODE = REGION.REGION_PARENT
+    </select>
+	<!-- 用途：通过区域名称获得区域编码 缓存 -->
+	<!-- 通过省、市两级名称获得市，示例：湖北省-武汉市 -->
+	<select id="getCityByProvinceAndCity" resultMap="regionResultMap" parameterType="hashmap" >
+	    SELECT  
+	    <include refid="columns_of_t_base_region" />
+		  FROM (SELECT 
+		  		<include refid="columns_of_t_base_region" />
+		          FROM t_base_region r
+		         WHERE r.DEL_FLAG = 0
+		         START WITH (r.region_name = #{province} AND r.region_level = 'PROVINCE')
+		        CONNECT BY PRIOR r.region_code = r.region_parent
+		         ORDER BY r.region_code ASC) a
+		 WHERE a.region_level = 'CITY'
+		   AND a.region_name = #{city}
+	</select>
+	
+	<!-- 用途：通过区域名称获得区域编码 缓存 -->
+	<!-- 通过省、市、区（县）三级名称获得区（县），示例：湖北省-武汉市-洪山区 -->
+	<select id="getDistrictByProvinceAndCityAndDistrict" resultMap="regionResultMap" parameterType="hashmap" >
+	    SELECT
+	    <include refid="columns_of_t_base_region" />
+		  FROM t_base_region REGION
+		 WHERE region.region_parent =
+		       (SELECT a.region_code
+		          FROM (SELECT
+		          			<include refid="columns_of_t_base_region" />
+		                  FROM t_base_region r
+		                 WHERE r.DEL_FLAG = 0
+		                 START WITH (r.region_name = #{province} AND
+		                            r.region_level = 'PROVINCE')
+		                CONNECT BY PRIOR r.region_code = r.region_parent
+		                 ORDER BY r.region_code ASC) a
+		         WHERE a.region_level = 'CITY'
+		           AND a.region_name = #{city})
+		   AND REGION.region_name = #{district}
+		   AND REGION.DEL_FLAG=0
+	</select>
+	
+</mapper>

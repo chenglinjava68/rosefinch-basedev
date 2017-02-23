@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="rosefinch-baseTest-web:war">
+    <output-path>$PROJECT_DIR$/rosefinch-baseTest-web/target</output-path>
+    <root id="archive" name="rosefinch-baseTest-web.war">
+      <element id="artifact" artifact-name="rosefinch-baseTest-web:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.ISignTrancenterTimeDao">
+<!-- <select id="querySignTrancenterTimeVoPagination" parameterType="java.util.Map"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.SignTrancenterTimeVo">
+        SELECT distinct
+        T.ID id,
+        T.CONFIG_CODE configCode,
+        T.CONFIG_NAME
+        configName,
+        T.ONE_ARRIVAL_TIME_S oneArrivalTimeS,
+        T.ONE_ARRIVAL_TIME_E oneArrivalTimeE,
+        T.ONE_DISPATCH_END_TIME
+        oneDispatchEndTime,
+        T.ONE_DISPATCH_MONTH_END_TIME
+        oneDispatchMonthEndTime,
+        T.TWO_ARRIVAL_TIME_S twoArrivalTimeS,
+        T.TWO_ARRIVAL_TIME_E twoArrivalTimeE,
+        T.TWO_DISPATCH_END_TIME
+        twoDispatchEndTime,
+        T.ONE_DISPATCH_RATE oneDispatchRate,
+        T.TWO_DISPATCH_RATE twoDispatchRate,
+        T.BL_FLAG blFlag,
+        T.CREATE_USER_CODE createUserCode ,
+        T.CREATE_TIME createTime,
+        T.MODIFY_USER_CODE modifyUserCode,
+        T.MODIFY_TIME modifyTime,
+        T.REMARK remark ,
+        T.DEL_FLAG delFlag,
+        R.ID rId,
+        R.SITE_CODE
+        siteCode
+        FROM
+        T_SIGN_TRANCENTER_TIME T LEFT JOIN T_SIGN_TRANCENTER_TIME_RELE R ON T.CONFIG_CODE = R.CONFIG_CODE
+        WHERE 1=1
+        <if test="configName != null and configName!= ''">
+            and T.CONFIG_NAME like #{configName}
+        </if>
+        AND T.DEL_FLAG=0
+
+    </select> -->
+     <!--   修改 -->
+    <resultMap id="signTrancenterTimeResult" type="com.ycgwl.rosefinch.module.basedev.shared.vo.base.SignTrancenterTimeVo">
+        <result property="id" column="ID" />
+        <result property="configCode" column="CONFIG_CODE" />
+        <result property="configName" column="CONFIG_NAME" />
+        <result property="oneArrivalTimeS" column="ONE_ARRIVAL_TIME_S" />
+        <result property="oneArrivalTimeE" column="ONE_ARRIVAL_TIME_E" />
+        <result property="oneDispatchEndTime" column="ONE_DISPATCH_END_TIME" />
+        <result property="oneDispatchMonthEndTime" column="ONE_DISPATCH_MONTH_END_TIME" />
+        <result property="twoArrivalTimeS" column="TWO_ARRIVAL_TIME_S" />
+        <result property="twoArrivalTimeE" column="TWO_ARRIVAL_TIME_E" />
+        <result property="twoDispatchEndTime" column="TWO_DISPATCH_END_TIME" />
+         <result property="twoDispatchMonthEndTime" column="TWO_DISPATCH_MONTH_END_TIME" />
+       
+        <result property="oneDispatchRate" column="ONE_DISPATCH_RATE" />
+        <result property="twoDispatchRate" column="TWO_DISPATCH_RATE" />
+        <result property="blFlag" column="BL_FLAG" />
+        <result property="createUserCode" column="CREATE_USER_CODE" />
+        <result property="createTime" column="CREATE_TIME" />
+        
+        <result property="modifyUserCode" column="MODIFY_USER_CODE" />
+        <result property="modifyTime" column="MODIFY_TIME" />
+        
+        <result property="remark" column="REMARK" />
+        <result property="delFlag" column="DEL_FLAG" />
+        
+        <collection property="siteCodeList" ofType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.SignTrancenterTimeReleVo" column="{configCodes=CONFIG_CODE}" select="querybyConfigCode" />
+    </resultMap>
+     <!-- 修改查询方法 -->
+    <select id="querySignTrancenterTimeVoPagination2" parameterType="java.util.Map"
+       resultMap="signTrancenterTimeResult">
+        SELECT 
+        distinct
+        T.ID ID,
+        T.CONFIG_CODE CONFIG_CODE,
+        T.CONFIG_NAME CONFIG_NAME,
+        T.ONE_ARRIVAL_TIME_S ONE_ARRIVAL_TIME_S,
+        T.ONE_ARRIVAL_TIME_E ONE_ARRIVAL_TIME_E,
+        T.ONE_DISPATCH_END_TIME ONE_DISPATCH_END_TIME,
+        T.ONE_DISPATCH_MONTH_END_TIME ONE_DISPATCH_MONTH_END_TIME,
+        T.TWO_ARRIVAL_TIME_S TWO_ARRIVAL_TIME_S,
+        T.TWO_ARRIVAL_TIME_E TWO_ARRIVAL_TIME_E,
+        T.TWO_DISPATCH_END_TIME TWO_DISPATCH_END_TIME,
+        T.TWO_DISPATCH_MONTH_END_TIME TWO_DISPATCH_MONTH_END_TIME,       
+        T.ONE_DISPATCH_RATE ONE_DISPATCH_RATE,
+        T.TWO_DISPATCH_RATE TWO_DISPATCH_RATE,
+        T.BL_FLAG BL_FLAG,
+        T.CREATE_USER_CODE CREATE_USER_CODE ,
+        T.CREATE_TIME CREATE_TIME,
+        T.MODIFY_USER_CODE MODIFY_USER_CODE,
+        T.MODIFY_TIME MODIFY_TIME,
+        T.REMARK REMARK ,
+        T.DEL_FLAG DEL_FLAG
+        FROM
+        T_SIGN_TRANCENTER_TIME T 
+        WHERE 1=1
+        <if test="configName != null and configName!= ''">
+            and T.CONFIG_NAME like #{configName}
+        </if>
+        AND T.DEL_FLAG=0
+       
+    </select>
+    
+    <select id="querybyConfigCode" resultType="com.ycgwl.rosefinch.module.basedev.shared.vo.base.SignTrancenterTimeReleVo" parameterType="java.util.Map">
+    SELECT
+    R.ID rId,
+    R.CONFIG_CODE configCode,
+    R.SITE_CODE  siteCode
+    FROM  
+        T_SIGN_TRANCENTER_TIME_RELE R
+    WHERE 
+        R.CONFIG_CODE = #{configCodes,jdbcType=VARCHAR}
+        
+    </select>
+    
+    
+    
+  <!-- 修改结束 -->
+
+    <select id="getConfigCodeByCentreInsert" parameterType="java.lang.String"
+        resultType="java.lang.String">
+        SELECT CONFIG_CODE
+        FROM T_SIGN_TRANCENTER_TIME
+        WHERE CONFIG_CODE = #{configCode , jdbcType=VARCHAR}
+        and del_flag=0
+    </select>
+    <!-- <select id="getConfigCodeByCentreInsert2" parameterType="hashmap"
+        resultType="int">
+        SELECT CONFIG_CODE
+        FROM T_SIGN_TRANCENTER_TIME
+        WHERE CONFIG_CODE = #{configCode , jdbcType=VARCHAR}
+        and config_code != #{configCode}
+        and del_flag=0
+    </select> -->
+    <select id="getConfigNameByCentreInsert2" parameterType="hashmap"
+        resultType="int">
+        
+        SELECT count(1)
+        CONFIG_NAME
+        FROM T_SIGN_TRANCENTER_TIME
+        WHERE CONFIG_NAME = #{configName , jdbcType=VARCHAR}
+         and config_code != #{configCode, jdbcType=VARCHAR}
+        and del_flag=0
+    </select>
+    
+    
+    <select id="getConfigNameByCentreInsert" parameterType="java.lang.String"
+        resultType="java.lang.String">
+        SELECT CONFIG_NAME
+        FROM T_SIGN_TRANCENTER_TIME
+        WHERE CONFIG_NAME = #{configName , jdbcType=VARCHAR}
+        and del_flag=0
+    </select>
+    <update id="openBlFlagById" parameterType="long">
+        update
+        T_SIGN_TRANCENTER_TIME T set T.BL_FLAG=1,
+        T.MODIFY_TIME=sysdate 
+        where T.id = #{id}
+    </update>
+    <update id="closeBlFlagById" parameterType="long">
+        update
+        T_SIGN_TRANCENTER_TIME T set T.BL_FLAG=0,
+        T.MODIFY_TIME=sysdate
+        where T.id = #{id}
+    </update>
+    <!-- 逻辑删除 -->
+    <update id="logicalDeleteById" parameterType="long">
+        update T_SIGN_TRANCENTER_TIME t set t.del_flag=1 where ID = #{id}
+    </update>
+    <!--  批量删除 -->
+    <update id="batchDeleteCentreSendTimeByIdValue" parameterType="java.util.Map">
+    update  T_SIGN_TRANCENTER_TIME t   
+    set t.del_flag = 1 
+      where id in
+        <foreach collection="ids" item="item" open="("
+            separator="," close=")">
+            #{item}
+        </foreach>
+        and t.del_flag = 0
+    </update>
+
+</mapper>

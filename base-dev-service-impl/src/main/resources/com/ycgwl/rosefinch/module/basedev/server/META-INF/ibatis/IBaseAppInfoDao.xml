@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycgwl.rosefinch.module.basedev.server.dao.base.IBaseAppInfoDao">
+    <resultMap
+        type="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseAppInfoEntity"
+        id="baseAppInfoEntityResultMap">
+         <result property="appId" column="APP_ID" />
+        <result property="appKey" column="APP_KEY" />
+        <result property="appName" column="APP_NAME" />
+        <result property="appSecret" column="APP_SECRET" />
+        <result property="timeoutMillis" column="TIMEOUT_MILLIS" />
+        <result property="timestampMinutes" column="TIMESTAMP_MINUTES" />
+        <result property="ipWhiteList" column="IP_WHITE_LIST" />
+        <result property="pre1" column="PRE_1" />
+        <result property="pre2" column="PRE_2" />
+        <result property="pre3" column="PRE_3" />
+        <result property="pre4" column="PRE_4" />
+        <result property="pre5" column="PRE_5" />
+         <result property="modifyUserCode" column="MODIFY_USER_CODE" />
+        <result property="auditUserCode" column="AUDIT_USER_CODE" />
+        <result property="createTime" column="CREATE_TIME" />
+        <result property="modifyTime" column="MODIFY_TIME" />
+        <result property="delFlag" column="DEL_FLAG" />
+        <collection property="baseInterfaceInfoList" ofType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseInterfaceInfoEntity" column="{appKey=APP_KEY}" select="getByAppkeyInMain" />
+    </resultMap>
+	 <select
+        id="getByAppkeyInMain"
+        resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseInterfaceInfoEntity"
+        parameterType="java.util.Map"> 
+        SELECT t.INTERFACE_ID AS interfaceId, t.INTERFACE_CODE as interfaceCode,
+        t.INTERFACE_NAME as interfaceName, t.URL as url, t.PRODUCT_NAME as productName, t.APP_KEY as appKey,
+        t.RETURN_URL as returnUrl, t.NOTIFY_URL as notifyUrl , t.PRE_1 as pre1, t.PRE_2 as pre2, t.PRE_3 as pre3, t.PRE_4 as pre4,
+        t.PRE_5 as pre2, t.CREATE_TIME as createTime, t.CREATE_USER_CODE as createUserCode, t.MODIFY_TIME as modifyTime,
+        t.MODIFY_USER_CODE as modifyUserCode, t.REMARK as remark, t.DEL_FLAG as delFlag FROM
+        T_BASE_INTERFACE_INFO T where T.DEL_FLAG=0 AND
+        T.APP_KEY=#{appKey,jdbcType=VARCHAR}
+    </select>
+	<!-- <insert id="insert2BaseAppInfo" parameterType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseAppInfoEntity">
+	</insert> -->
+	<select id="getByAppId" resultMap="baseAppInfoEntityResultMap" parameterType="java.lang.Long">
+        SELECT APP_ID, APP_KEY, APP_NAME, APP_SECRET, 
+        TIMEOUT_MILLIS, TIMESTAMP_MINUTES, IP_WHITE_LIST, 
+        PRE_1, PRE_2, PRE_3, PRE_4, PRE_5,
+        CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE,
+        REMARK, DEL_FLAG FROM T_BASE_APP_INFO T 
+        WHERE T.APP_ID = #{appId,jdbcType=DECIMAL}       
+    </select>
+        <select id="getByAppKey" resultMap="baseAppInfoEntityResultMap" parameterType="java.lang.String">
+        SELECT APP_ID, APP_KEY, APP_NAME, APP_SECRET, 
+        TIMEOUT_MILLIS, TIMESTAMP_MINUTES, IP_WHITE_LIST, 
+        PRE_1, PRE_2, PRE_3, PRE_4, PRE_5,
+        CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, MODIFY_USER_CODE,
+        REMARK, DEL_FLAG FROM T_BASE_APP_INFO T 
+        WHERE T.APP_KEY = #{appKey,jdbcType=VARCHAR}       
+    </select>
+	<select id="getQueryKeyData" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseAppInfoEntity">
+	       select app_id as appId,app_key as appKey,app_name as appName,app_secret as appSecret,create_time as createTime,create_user_code as createUserCode,
+	       modify_time as modifyTime,modify_user_code as modifyUserCode from t_base_app_info t where t.app_key=#{appKey,jdbcType=VARCHAR} 
+	</select>
+	
+	<select id="getQueryNameData" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseAppInfoEntity">
+	       select app_id as appId,app_key as appKey,app_name as appName,app_secret as appSecret,create_time as createTime,create_user_code as createUserCode,
+	       modify_time as modifyTime,modify_user_code as modifyUserCode from t_base_app_info t where t.app_name=#{appName}
+	</select>
+	
+	<!-- <select id="getQueryData" paramterType="String" resultType="com.ycgwl.rosefinch.module.basedev.shared.entity.base.BaseAppInfoEntity">
+           select t.app_id as appId,t.app_key as appKey,t.app_name as appName,t.app_secret as appSecret,t.create_time as createTime,t.create_user_code as createUserCode,
+	       t.modify_time as modifyTime,t.modify_user_code as modifyUserCode from t_base_app_info t where t.app_key=#{appKey,jdbcType=VARCHAR} and t.app_name=#{appName,jdbcType=VARCHAR}
+	</select> -->
+	
+	<select id="getQueryAllData" resultMap="baseAppInfoEntityResultMap">
+	       select app_id as appId,app_key as appKey,app_name as appName,app_secret as appSecret,create_time as createTime,create_user_code as createUserCode,
+	       modify_time as modifyTime,modify_user_code as modifyUserCode from t_base_app_info t
+	</select>	
+</mapper>
